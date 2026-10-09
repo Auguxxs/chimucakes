@@ -12,6 +12,7 @@ function Checkout() {
     address: '',
     notes: '',
     deliveryDate: '',
+    deliveryMethod: 'retiro',
   })
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
@@ -29,12 +30,17 @@ function Checkout() {
       })
       .join('\n')
 
+    const deliveryInfo =
+      form.deliveryMethod === 'retiro'
+        ? '*Método de entrega:* Retiro en local'
+        : `*Método de entrega:* Envío a domicilio\n*Dirección:* ${form.address}\n*Nota:* El envío debe ser cotizado antes de confirmar el pedido`
+
     return `🌱 *Nuevo Pedido — ChimuCakes* 🌱
 
 *Cliente:* ${form.customerName}
 *Teléfono:* ${form.phone}
-*Dirección/Retiro:* ${form.address}
 *Fecha de Entrega:* ${form.deliveryDate}
+${deliveryInfo}
 ${form.notes ? `*Notas:* ${form.notes}` : ''}
 
 *Pedido:*
@@ -55,12 +61,20 @@ ${itemsText}
     e.preventDefault()
     setError('')
 
-    if (!form.customerName || !form.phone || !form.address || !form.deliveryDate) {
+    if (!form.customerName || !form.phone || !form.deliveryDate) {
       setError('Completá todos los campos obligatorios')
       return
     }
 
+    if (form.deliveryMethod === 'envio' && !form.address) {
+      setError('Si elegís envío a domicilio, necesitamos tu dirección')
+      return
+    }
+
     setSending(true)
+
+    const addressValue =
+      form.deliveryMethod === 'retiro' ? 'Retiro en local' : form.address
 
     const itemsText = items
       .map((item) => {
@@ -70,18 +84,16 @@ ${itemsText}
       .join(', ')
 
     try {
-      // Registrar en Airtable (o fallback local)
       await createOrder({
         customerName: form.customerName,
         phone: form.phone,
-        address: form.address,
+        address: addressValue,
         notes: form.notes,
         itemsText,
         total: totalPrice,
         deliveryDate: form.deliveryDate,
       })
 
-      // Abrir WhatsApp
       const message = generateWhatsAppMessage()
       const whatsappNumber = import.meta.env.VITE_WHATSAPP_PHONE || '5493794689777'
       const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
@@ -152,20 +164,63 @@ ${itemsText}
               />
             </div>
 
+            {/* Método de entrega */}
             <div>
-              <label className="mb-1 block text-sm font-medium text-marron">
-                Dirección de entrega o retiro *
+              <label className="mb-2 block text-sm font-medium text-marron">
+                Método de entrega *
               </label>
-              <input
-                type="text"
-                name="address"
-                value={form.address}
-                onChange={handleChange}
-                placeholder="Av. Corrientes 1234, CABA o Retiro en local"
-                className="input-field"
-                required
-              />
+              <div className="flex gap-4">
+                <label className="flex flex-1 cursor-pointer items-center gap-3 rounded-xl border-2 border-marron/20 p-3 transition hover:border-rosa has-[:checked]:border-rosa has-[:checked]:bg-rosaClaro/30">
+                  <input
+                    type="radio"
+                    name="deliveryMethod"
+                    value="retiro"
+                    checked={form.deliveryMethod === 'retiro'}
+                    onChange={handleChange}
+                    className="h-4 w-4 accent-rosa"
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-oscuro">Retiro en local</p>
+                    <p className="text-xs text-marron/60">Pasá a buscar tu pedido</p>
+                  </div>
+                </label>
+                <label className="flex flex-1 cursor-pointer items-center gap-3 rounded-xl border-2 border-marron/20 p-3 transition hover:border-rosa has-[:checked]:border-rosa has-[:checked]:bg-rosaClaro/30">
+                  <input
+                    type="radio"
+                    name="deliveryMethod"
+                    value="envio"
+                    checked={form.deliveryMethod === 'envio'}
+                    onChange={handleChange}
+                    className="h-4 w-4 accent-rosa"
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-oscuro">Envío a domicilio</p>
+                    <p className="text-xs text-marron/60">Te lo llevamos</p>
+                  </div>
+                </label>
+              </div>
             </div>
+
+            {/* Dirección (solo envío) */}
+            {form.deliveryMethod === 'envio' && (
+              <div>
+                <label className="mb-1 block text-sm font-medium text-marron">
+                  Dirección de entrega *
+                </label>
+                <input
+                  type="text"
+                  name="address"
+                  value={form.address}
+                  onChange={handleChange}
+                  placeholder="Calle, número, piso/dpto, barrio/localidad"
+                  className="input-field"
+                  required
+                />
+                <p className="mt-2 rounded-lg bg-lima/20 border border-lima/40 px-3 py-2 text-xs text-oscuro">
+                  ⚠️ Nota: El envío tiene costos adicionales que serán calculados y confirmados al procesar tu pedido.
+                </p>
+              </div>
+            )}
 
             <div>
               <label className="mb-1 block text-sm font-medium text-marron">
