@@ -83,7 +83,7 @@ ${itemsText}
 
       // Abrir WhatsApp
       const message = generateWhatsAppMessage()
-      const whatsappNumber = import.meta.env.VITE_WHATSAPP_PHONE || '5491123456789'
+      const whatsappNumber = import.meta.env.VITE_WHATSAPP_PHONE || '5493794689777'
       const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
       window.open(url, '_blank')
 
