@@ -3,6 +3,9 @@ import productsData from '../data/products'
 const API_KEY = import.meta.env.VITE_AIRTABLE_API_KEY
 const BASE_ID = import.meta.env.VITE_AIRTABLE_BASE_ID
 
+console.log('[Airtable] API_KEY cargada:', API_KEY ? `Sí (${API_KEY.substring(0, 8)}...)` : 'No')
+console.log('[Airtable] BASE_ID cargado:', BASE_ID ? `Sí (${BASE_ID})` : 'No')
+
 const isConfigured = !!(API_KEY && BASE_ID)
 
 const BASE_URL = `https://api.airtable.com/v0/${BASE_ID}`

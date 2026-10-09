@@ -27,7 +27,7 @@ Copiar `.env.example` como `.env` y completar:
 
 | Variable | Propósito |
 |----------|-----------|
-| `VITE_AIRTABLE_API_KEY` | API key de Airtable |
+| `VITE_AIRTABLE_API_KEY` | API key de Airtable (actualizada: Oct 2026) |
 | `VITE_AIRTABLE_BASE_ID` | Base ID de Airtable |
 | `VITE_AIRTABLE_PRODUCTS_TABLE` | Tabla de productos (default: `Productos`) |
 | `VITE_AIRTABLE_ORDERS_TABLE` | Tabla de pedidos (default: `Pedidos`) |
