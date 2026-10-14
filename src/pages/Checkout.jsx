@@ -8,7 +8,6 @@ function Checkout() {
   const navigate = useNavigate()
   const [form, setForm] = useState({
     customerName: '',
-    phone: '',
     address: '',
     notes: '',
     deliveryDate: '',
@@ -38,7 +37,6 @@ function Checkout() {
     return `🌱 *Nuevo Pedido — ChimuCakes* 🌱
 
 *Cliente:* ${form.customerName}
-*Teléfono:* ${form.phone}
 *Fecha de Entrega:* ${form.deliveryDate}
 ${deliveryInfo}
 ${form.notes ? `*Notas:* ${form.notes}` : ''}
@@ -61,7 +59,7 @@ ${itemsText}
     e.preventDefault()
     setError('')
 
-    if (!form.customerName || !form.phone || !form.deliveryDate) {
+    if (!form.customerName || !form.deliveryDate) {
       setError('Completá todos los campos obligatorios')
       return
     }
@@ -86,7 +84,6 @@ ${itemsText}
     try {
       await createOrder({
         customerName: form.customerName,
-        phone: form.phone,
         address: addressValue,
         notes: form.notes,
         itemsText,
@@ -144,21 +141,6 @@ ${itemsText}
                 value={form.customerName}
                 onChange={handleChange}
                 placeholder="María García"
-                className="input-field"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="mb-1 block text-sm font-medium text-marron">
-                Teléfono / WhatsApp *
-              </label>
-              <input
-                type="tel"
-                name="phone"
-                value={form.phone}
-                onChange={handleChange}
-                placeholder="11 5555-1234"
                 className="input-field"
                 required
               />
