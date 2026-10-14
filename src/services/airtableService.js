@@ -281,6 +281,41 @@ export async function authenticateUser(username, password) {
 }
 
 /**
+ * Elimina un pedido de Airtable.
+ * @param {string} orderId - ID del registro en Airtable
+ * @returns {Object} Confirmación de eliminación
+ */
+export async function deleteOrder(orderId) {
+  if (!isConfigured) {
+    console.log(`Pedido eliminado (modo local): ${orderId}`)
+    return { id: orderId, deleted: true }
+  }
+
+  const url = `${BASE_URL}/Pedidos/${orderId}`
+  console.log('[Airtable] DELETE URL:', url)
+
+  try {
+    const res = await fetch(url, {
+      method: 'DELETE',
+      headers,
+    })
+
+    console.log('[Airtable] DELETE status:', res.status)
+
+    if (!res.ok) {
+      const errorBody = await res.json().catch(() => ({}))
+      console.error('[Airtable] DELETE error:', errorBody)
+      throw new Error(errorBody?.error?.message || `HTTP ${res.status}`)
+    }
+
+    return { id: orderId, deleted: true }
+  } catch (error) {
+    console.error('[Airtable] Error en deleteOrder:', error)
+    throw error
+  }
+}
+
+/**
  * Actualiza el estado de un pedido en Airtable.
  * @param {string} orderId - ID del registro en Airtable
  * @param {string} newStatus - Nuevo estado

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getOrders, updateOrderStatus, updateOrder, createOrder } from '../services/airtableService'
+import { getOrders, updateOrderStatus, updateOrder, createOrder, deleteOrder } from '../services/airtableService'
 import OrderStats from '../components/OrderStats'
 
 const STATUS_LIST = ['Pendiente', 'En preparación', 'Listo', 'Entregado', 'Cancelado']
@@ -220,7 +220,7 @@ function OrderModal({ order, onClose, onSave, loading }) {
   )
 }
 
-function OrderCard({ order, onStatusChange, onEdit, loadingId }) {
+function OrderCard({ order, onStatusChange, onEdit, onDelete, loadingId }) {
   const nearDelivery = isDeliveryNear(order.deliveryDate)
   const whatsappNumber = import.meta.env.VITE_WHATSAPP_PHONE || '5493794689777'
   const isLoading = loadingId === order.id
@@ -229,6 +229,12 @@ function OrderCard({ order, onStatusChange, onEdit, loadingId }) {
     const message = `Hola ${order.customerName}, soy de ChimuCakes. Consulto sobre tu pedido (${order.itemsText}) con entrega ${order.deliveryDate}.`
     const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
     window.open(url, '_blank')
+  }
+
+  const handleDelete = () => {
+    if (window.confirm(`¿Estás seguro de que deseas eliminar el pedido de ${order.customerName}?`)) {
+      onDelete(order.id)
+    }
   }
 
   return (
@@ -295,6 +301,13 @@ function OrderCard({ order, onStatusChange, onEdit, loadingId }) {
           </svg>
           WhatsApp
         </button>
+        <button
+          onClick={handleDelete}
+          disabled={isLoading}
+          className="whitespace-nowrap rounded-full bg-red-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-600 active:scale-95 disabled:opacity-50"
+        >
+          🗑️ Eliminar
+        </button>
       </div>
     </div>
   )
@@ -351,6 +364,20 @@ function Admin() {
     } catch (err) {
       console.error('Error actualizando estado:', err)
       showToast('Error al actualizar estado', 'error')
+    } finally {
+      setLoadingId(null)
+    }
+  }
+
+  const handleDelete = async (orderId) => {
+    setLoadingId(orderId)
+    try {
+      await deleteOrder(orderId)
+      setOrders((prev) => prev.filter((o) => o.id !== orderId))
+      showToast('Pedido eliminado correctamente')
+    } catch (err) {
+      console.error('Error eliminando pedido:', err)
+      showToast('Error al eliminar pedido', 'error')
     } finally {
       setLoadingId(null)
     }
@@ -528,6 +555,7 @@ function Admin() {
               order={order}
               onStatusChange={handleStatusChange}
               onEdit={handleOpenEdit}
+              onDelete={handleDelete}
               loadingId={loadingId}
             />
           ))}
