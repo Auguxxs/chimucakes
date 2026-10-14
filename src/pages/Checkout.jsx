@@ -34,10 +34,14 @@ function Checkout() {
         ? '*Método de entrega:* Retiro en local'
         : `*Método de entrega:* Envío a domicilio\n*Dirección:* ${form.address}\n*Nota:* El envío debe ser cotizado antes de confirmar el pedido`
 
+    // Formatear fecha a DD/MM/YYYY solo para el mensaje de WhatsApp
+    const [year, month, day] = form.deliveryDate.split('-')
+    const formattedDate = `${day}/${month}/${year}`
+
     return `🌱 *Nuevo Pedido — ChimuCakes* 🌱
 
 *Cliente:* ${form.customerName}
-*Fecha de Entrega:* ${form.deliveryDate}
+*Fecha de Entrega:* ${formattedDate}
 ${deliveryInfo}
 ${form.notes ? `*Notas:* ${form.notes}` : ''}
 
