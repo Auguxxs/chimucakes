@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext'
 const DIET_CATEGORIES = ['Budines', 'Tortas', 'Cheesecakes']
 const CHIPA_CATEGORY = 'Chipas'
 const VASCO_PRODUCT = 'Cheesecake Vasco'
+const CHAJA_PRODUCT = 'Torta Chajá'
 
 function getDietLabel(sinAzucar, sinGluten) {
   if (sinAzucar && sinGluten) return 'Sin Azúcar y Sin Gluten'
@@ -23,6 +24,7 @@ function ProductCard({ product }) {
   const hasDietOptions = DIET_CATEGORIES.includes(product.category)
   const isChipa = product.category === CHIPA_CATEGORY
   const isVasco = product.name === VASCO_PRODUCT
+  const isChaja = product.name === CHAJA_PRODUCT
 
   const currentPrice = hasVariantes
     ? product.variantes[selectedVariant].precio
@@ -68,7 +70,7 @@ function ProductCard({ product }) {
         <h3 className="font-display text-lg font-semibold text-marron">
           {product.name}
         </h3>
-        <p className="mt-2 text-sm text-marron/70 line-clamp-2">
+        <p className="mt-2 text-sm text-marron/70">
           {product.description}
         </p>
         {product.tags && product.tags.length > 0 && (
@@ -140,16 +142,22 @@ function ProductCard({ product }) {
             </label>
             <div className="flex flex-wrap gap-2">
               {/* Sin Azúcar */}
-              <button
-                onClick={() => setSinAzucar(!sinAzucar)}
-                className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
-                  sinAzucar
-                    ? 'bg-rosa text-oscuro shadow-sm'
-                    : 'bg-rosaClaro/50 text-marron hover:bg-rosaClaro'
-                }`}
-              >
-                Sin Azúcar
-              </button>
+              {isChaja ? (
+                <span className="inline-flex items-center rounded-full bg-crema px-4 py-1.5 text-xs font-medium text-marron/40 cursor-not-allowed" title="La Torta Chajá siempre es tradicional (con azúcar)">
+                  Sin Azúcar (no disponible)
+                </span>
+              ) : (
+                <button
+                  onClick={() => setSinAzucar(!sinAzucar)}
+                  className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
+                    sinAzucar
+                      ? 'bg-rosa text-oscuro shadow-sm'
+                      : 'bg-rosaClaro/50 text-marron hover:bg-rosaClaro'
+                  }`}
+                >
+                  Sin Azúcar
+                </button>
+              )}
               {/* Sin Gluten */}
               {isVasco ? (
                 <span className="inline-flex items-center rounded-full bg-verde/20 px-4 py-1.5 text-xs font-medium text-verde cursor-not-allowed" title="El Cheesecake Vasco siempre es sin gluten">
