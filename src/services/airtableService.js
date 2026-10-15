@@ -18,17 +18,47 @@ const headers = {
 const PLACEHOLDER_IMAGE = 'https://placehold.co/400x300/faf6f2/6d544f?text=ChimuCakes'
 
 /**
- * Parsea variantes_json desde Airtable (puede ser JSON string, array o null)
+ * Parsea variantes/tamaños desde Airtable de forma defensiva.
+ * Soporta múltiples formatos:
+ * - JSON string: '[{"tamano":"100gr","precio":2000}]'
+ * - Array directo: [{tamano, precio}]
+ * - Objeto con opciones_tamano: {opciones_tamano: [{label, precio}]}
  */
 function parseVariantes(variantesRaw) {
   if (!variantesRaw) return null
-  if (Array.isArray(variantesRaw)) return variantesRaw
-  try {
-    const parsed = JSON.parse(variantesRaw)
-    return Array.isArray(parsed) ? parsed : null
-  } catch {
-    return null
+
+  let parsed = variantesRaw
+
+  // Si es string, intentar parsear
+  if (typeof variantesRaw === 'string') {
+    try {
+      parsed = JSON.parse(variantesRaw)
+    } catch {
+      console.warn('[Airtable] Error parseando variantes_json:', variantesRaw)
+      return null
+    }
   }
+
+  // Si es un array directo
+  if (Array.isArray(parsed)) {
+    return parsed.map((v) => ({
+      tamano: v.tamano || v.label || v.nombre || 'Precio único',
+      precio: Number(v.precio) || 0,
+    }))
+  }
+
+  // Si es un objeto con opciones_tamano
+  if (parsed && typeof parsed === 'object') {
+    const opciones = parsed.opciones_tamano || parsed.opciones || parsed.variantes || parsed.tamanos
+    if (Array.isArray(opciones)) {
+      return opciones.map((v) => ({
+        tamano: v.tamano || v.label || v.nombre || 'Precio único',
+        precio: Number(v.precio) || 0,
+      }))
+    }
+  }
+
+  return null
 }
 
 /**
@@ -73,6 +103,15 @@ export async function getProducts() {
 
     return availableRecords.map((record) => {
       const fields = record.fields || {}
+
+      // Debug temporal para Chipá
+      if (fields.nombre?.includes('Chipa') || fields.nombre?.includes('Chipá')) {
+        console.log('[DEBUG Chipá] nombre:', fields.nombre)
+        console.log('[DEBUG Chipá] variantes_json:', fields.variantes_json)
+        console.log('[DEBUG Chipá] variantes parseadas:', parseVariantes(fields.variantes_json))
+        console.log('[DEBUG Chipá] Todos los campos:', Object.keys(fields))
+      }
+
       const imagenUrl = fields.imagen?.[0]?.url || fields.imagen?.[0]?.thumbnails?.large?.url || PLACEHOLDER_IMAGE
       const nombre = fields.nombre || 'Sin nombre'
       const descripcion = fields.descripcion || ''
@@ -92,6 +131,7 @@ export async function getProducts() {
         imagen_url: imagenUrl,
         image: imagenUrl,
         variantes: parseVariantes(fields.variantes_json),
+        variantes_raw: fields.variantes_json,
       }
     })
   } catch (error) {
