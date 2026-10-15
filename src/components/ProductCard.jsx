@@ -28,18 +28,24 @@ function ProductCard({ product }) {
   const hasDietOptions = DIET_CATEGORIES.includes(product.category)
   const isChipa = product.category === CHIPA_CATEGORY
   const isVasco = product.name === VASCO_PRODUCT
-  const isChaja = normalizeText(product.name).includes('chaja')
+  const nombreNormalizado = String(product.nombre || product.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  const isChaja = nombreNormalizado.includes('chaja')
+
+  console.log('Producto actual:', product.nombre || product.name, '| Es Chajá:', isChaja)
+
+  // Forzar sinAzucar a false si es Torta Chajá
+  const effectiveSinAzucar = isChaja ? false : sinAzucar
 
   const currentPrice = hasVariantes
     ? product.variantes[selectedVariant].precio
     : product.price
 
-  const dietLabel = getDietLabel(sinAzucar, sinGluten)
+  const dietLabel = getDietLabel(effectiveSinAzucar, sinGluten)
 
   const handleAdd = () => {
     const item = {
       ...product,
-      dietOptions: hasDietOptions ? { sinAzucar, sinGluten } : null,
+      dietOptions: hasDietOptions ? { sinAzucar: effectiveSinAzucar, sinGluten } : null,
       dietLabel: hasDietOptions ? dietLabel : '',
       cookingType: isChipa ? cookingType : null,
     }
@@ -145,12 +151,8 @@ function ProductCard({ product }) {
               Variantes:
             </label>
             <div className="flex flex-wrap gap-2">
-              {/* Sin Azúcar */}
-              {isChaja ? (
-                <span className="inline-flex items-center rounded-full bg-crema px-4 py-1.5 text-xs font-medium text-marron/40 cursor-not-allowed" title="La Torta Chajá siempre es tradicional (con azúcar)">
-                  Sin Azúcar (no disponible)
-                </span>
-              ) : (
+              {/* Sin Azúcar — oculto para Torta Chajá */}
+              {!isChaja && (
                 <button
                   onClick={() => setSinAzucar(!sinAzucar)}
                   className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
