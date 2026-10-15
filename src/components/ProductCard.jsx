@@ -4,7 +4,11 @@ import { useCart } from '../context/CartContext'
 const DIET_CATEGORIES = ['Budines', 'Tortas', 'Cheesecakes']
 const CHIPA_CATEGORY = 'Chipas'
 const VASCO_PRODUCT = 'Cheesecake Vasco'
-const CHAJA_PRODUCT = 'Torta Chajá'
+
+// Normaliza texto: minúsculas y sin acentos
+function normalizeText(str) {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+}
 
 function getDietLabel(sinAzucar, sinGluten) {
   if (sinAzucar && sinGluten) return 'Sin Azúcar y Sin Gluten'
@@ -24,7 +28,7 @@ function ProductCard({ product }) {
   const hasDietOptions = DIET_CATEGORIES.includes(product.category)
   const isChipa = product.category === CHIPA_CATEGORY
   const isVasco = product.name === VASCO_PRODUCT
-  const isChaja = product.name === CHAJA_PRODUCT
+  const isChaja = normalizeText(product.name).includes('chaja')
 
   const currentPrice = hasVariantes
     ? product.variantes[selectedVariant].precio
