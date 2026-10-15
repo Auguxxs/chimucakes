@@ -66,9 +66,9 @@ export async function getProducts() {
     const data = await res.json()
     console.log('[Airtable] Productos recibidos en total:', data.records?.length || 0)
 
-    // Filtramos en JavaScript: si disponible no está definido, se asume disponible
+    // Filtramos estrictamente: solo productos donde 'true' sea explícitamente true
     const availableRecords = (data.records || []).filter(
-      (record) => record.fields?.disponible !== false
+      (record) => record.fields?.true === true || record.fields?.disponible === true
     )
 
     return availableRecords.map((record) => {

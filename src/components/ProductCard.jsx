@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { useCart } from '../context/CartContext'
 
-const DIET_CATEGORIES = ['Budines', 'Tortas']
+const DIET_CATEGORIES = ['Budines', 'Tortas', 'Cheesecakes']
+const CHIPA_CATEGORY = 'Chipas'
+const VASCO_PRODUCT = 'Cheesecake Vasco'
 
 function getDietLabel(sinAzucar, sinGluten) {
   if (sinAzucar && sinGluten) return 'Sin Azúcar y Sin Gluten'
@@ -15,9 +17,13 @@ function ProductCard({ product }) {
   const [selectedVariant, setSelectedVariant] = useState(0)
   const [sinAzucar, setSinAzucar] = useState(false)
   const [sinGluten, setSinGluten] = useState(false)
+  const [cookingType, setCookingType] = useState('Horneado')
 
   const hasVariantes = product.variantes && product.variantes.length > 0
   const hasDietOptions = DIET_CATEGORIES.includes(product.category)
+  const isChipa = product.category === CHIPA_CATEGORY
+  const isVasco = product.name === VASCO_PRODUCT
+
   const currentPrice = hasVariantes
     ? product.variantes[selectedVariant].precio
     : product.price
@@ -29,16 +35,21 @@ function ProductCard({ product }) {
       ...product,
       dietOptions: hasDietOptions ? { sinAzucar, sinGluten } : null,
       dietLabel: hasDietOptions ? dietLabel : '',
+      cookingType: isChipa ? cookingType : null,
     }
     if (hasVariantes) {
       item.selectedSize = product.variantes[selectedVariant].tamano
       item.finalPrice = product.variantes[selectedVariant].precio
     }
+    if (isChipa) {
+      item.selectedSize = `${product.variantes[selectedVariant].tamano} (${cookingType})`
+    }
     addToCart(item)
-    // Reset diet options after adding
+    // Reset options after adding
     setSinAzucar(false)
     setSinGluten(false)
     setSelectedVariant(0)
+    setCookingType('Horneado')
   }
 
   return (
@@ -97,32 +108,71 @@ function ProductCard({ product }) {
           </div>
         )}
 
-        {/* Checkboxes de dieta */}
+        {/* Tipo de cocción (solo Chipá) */}
+        {isChipa && (
+          <div className="mt-4">
+            <label className="mb-2 block text-xs font-medium text-marron/70">
+              Tipo de cocción:
+            </label>
+            <div className="flex gap-2">
+              {['Horneado', 'Congelado'].map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setCookingType(type)}
+                  className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
+                    cookingType === type
+                      ? 'bg-verde text-white shadow-sm'
+                      : 'bg-crema text-marron hover:bg-verde/10'
+                  }`}
+                >
+                  {type}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Variantes (checkboxes como pills) */}
         {hasDietOptions && (
           <div className="mt-4">
             <label className="mb-2 block text-xs font-medium text-marron/70">
-              Opciones de dieta:
+              Variantes:
             </label>
-            <div className="space-y-2">
-              <label className="flex cursor-pointer items-center gap-2 text-sm text-marron">
-                <input
-                  type="checkbox"
-                  checked={sinAzucar}
-                  onChange={(e) => setSinAzucar(e.target.checked)}
-                  className="h-4 w-4 accent-rosa"
-                />
+            <div className="flex flex-wrap gap-2">
+              {/* Sin Azúcar */}
+              <button
+                onClick={() => setSinAzucar(!sinAzucar)}
+                className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
+                  sinAzucar
+                    ? 'bg-rosa text-oscuro shadow-sm'
+                    : 'bg-rosaClaro/50 text-marron hover:bg-rosaClaro'
+                }`}
+              >
                 Sin Azúcar
-              </label>
-              <label className="flex cursor-pointer items-center gap-2 text-sm text-marron">
-                <input
-                  type="checkbox"
-                  checked={sinGluten}
-                  onChange={(e) => setSinGluten(e.target.checked)}
-                  className="h-4 w-4 accent-rosa"
-                />
-                Sin Gluten
-              </label>
+              </button>
+              {/* Sin Gluten */}
+              {isVasco ? (
+                <span className="inline-flex items-center rounded-full bg-verde/20 px-4 py-1.5 text-xs font-medium text-verde cursor-not-allowed" title="El Cheesecake Vasco siempre es sin gluten">
+                  Sin Gluten ✓
+                </span>
+              ) : (
+                <button
+                  onClick={() => setSinGluten(!sinGluten)}
+                  className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
+                    sinGluten
+                      ? 'bg-rosa text-oscuro shadow-sm'
+                      : 'bg-rosaClaro/50 text-marron hover:bg-rosaClaro'
+                  }`}
+                >
+                  Sin Gluten
+                </button>
+              )}
             </div>
+            {isVasco && (
+              <p className="mt-1 text-xs text-marron/50">
+                El Cheesecake Vasco siempre es sin gluten
+              </p>
+            )}
           </div>
         )}
 
