@@ -6,11 +6,11 @@ const MONTHS = [
   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
 ]
 
-const CATEGORIES = ['Tortas', 'Cheescakes', 'Budines', 'Galletitas']
+const CATEGORIES = ['Tortas', 'Cheesecakes', 'Budines', 'Galletitas']
 
 const CATEGORY_COLORS = {
   'Tortas': '#ee95be',
-  'Cheescakes': '#6d544f',
+  'Cheesecakes': '#6d544f',
   'Budines': '#065a2a',
   'Galletitas': '#d0d721',
 }
@@ -27,7 +27,7 @@ const PRODUCT_CATEGORY_MAP = {
   'Tarta de Manzana Rústica': 'Tortas',
   'Tarta de Coco y Mango': 'Tortas',
   'Tarta de Frutillas Crema': 'Tortas',
-  'Cheesecake de Anacardos': 'Cheescakes',
+  'Cheesecake de Anacardos': 'Cheesecakes',
   'Budín de Banana y Nuez': 'Budines',
   'Brownie de Remolacha': 'Budines',
   'Cookies de Avena y Pasas': 'Galletitas',
@@ -51,7 +51,7 @@ function getCategoryFromItem(itemName) {
   const lowerName = itemName.toLowerCase()
 
   // Prioridad 1: palabras clave específicas
-  if (lowerName.includes('cheesecake') || lowerName.includes('cheese cake')) return 'Cheescakes'
+  if (lowerName.includes('cheesecake') || lowerName.includes('cheese cake')) return 'Cheesecakes'
   if (lowerName.includes('budín') || lowerName.includes('budin') || lowerName.includes('brownie')) return 'Budines'
   if (lowerName.includes('cookie') || lowerName.includes('roll') || lowerName.includes('muffin') || lowerName.includes('alfajor') || lowerName.includes('galletita')) return 'Galletitas'
   if (lowerName.includes('tarta') || lowerName.includes('torta')) return 'Tortas'
