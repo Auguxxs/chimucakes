@@ -64,6 +64,11 @@ function CartModal() {
                               Tamaño: {item.selectedSize}
                             </span>
                           )}
+                          {item.dietLabel && (
+                            <span className="text-xs text-rosa font-medium">
+                              • {item.dietLabel}
+                            </span>
+                          )}
                         </div>
                         <button
                           onClick={() => removeFromCart(item.cartKey)}

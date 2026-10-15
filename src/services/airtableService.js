@@ -121,12 +121,12 @@ export async function createOrder(orderData) {
       {
         fields: {
           cliente_nombre: orderData.customerName,
-          cliente_telefono: orderData.phone,
           direccion_entrega: orderData.address,
           items_json: orderData.itemsText,
           total: orderData.total,
           estado: 'Pendiente',
           fecha_entrega: orderData.deliveryDate,
+          variantes: orderData.variantes || '',
         },
       },
     ],

@@ -25,7 +25,8 @@ function Checkout() {
       .map((item) => {
         const price = item.finalPrice || item.price
         const sizeLabel = item.selectedSize ? ` (${item.selectedSize})` : ''
-        return `• ${item.quantity}x ${item.name}${sizeLabel} — $${(price * item.quantity).toLocaleString('es-AR')}`
+        const dietLabel = item.dietLabel ? ` (${item.dietLabel})` : ''
+        return `• ${item.quantity}x ${item.name}${sizeLabel}${dietLabel} — $${(price * item.quantity).toLocaleString('es-AR')}`
       })
       .join('\n')
 
@@ -81,7 +82,8 @@ ${itemsText}
     const itemsText = items
       .map((item) => {
         const sizeLabel = item.selectedSize ? ` (${item.selectedSize})` : ''
-        return `${item.quantity}x ${item.name}${sizeLabel}`
+        const dietLabel = item.dietLabel ? ` (${item.dietLabel})` : ''
+        return `${item.quantity}x ${item.name}${sizeLabel}${dietLabel}`
       })
       .join(', ')
 

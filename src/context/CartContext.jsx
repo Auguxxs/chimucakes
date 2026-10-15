@@ -2,9 +2,11 @@ import { createContext, useContext, useState, useCallback, useMemo } from 'react
 
 const CartContext = createContext()
 
-// Genera un ID único por producto + variante
+// Genera un ID único por producto + tamaño + opciones de dieta
 const getItemKey = (item) => {
-  return item.selectedSize ? `${item.id}-${item.selectedSize}` : item.id
+  const size = item.selectedSize || ''
+  const diet = item.dietLabel || ''
+  return `${item.id}-${size}-${diet}`
 }
 
 export function CartProvider({ children }) {

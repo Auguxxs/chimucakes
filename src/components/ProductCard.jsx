@@ -1,25 +1,44 @@
 import { useState } from 'react'
 import { useCart } from '../context/CartContext'
 
+const DIET_CATEGORIES = ['Budines', 'Tortas']
+
+function getDietLabel(sinAzucar, sinGluten) {
+  if (sinAzucar && sinGluten) return 'Sin Azúcar y Sin Gluten'
+  if (sinAzucar) return 'Sin Azúcar'
+  if (sinGluten) return 'Sin Gluten'
+  return ''
+}
+
 function ProductCard({ product }) {
   const { addToCart } = useCart()
   const [selectedVariant, setSelectedVariant] = useState(0)
+  const [sinAzucar, setSinAzucar] = useState(false)
+  const [sinGluten, setSinGluten] = useState(false)
 
   const hasVariantes = product.variantes && product.variantes.length > 0
+  const hasDietOptions = DIET_CATEGORIES.includes(product.category)
   const currentPrice = hasVariantes
     ? product.variantes[selectedVariant].precio
     : product.price
 
+  const dietLabel = getDietLabel(sinAzucar, sinGluten)
+
   const handleAdd = () => {
-    if (hasVariantes) {
-      addToCart({
-        ...product,
-        selectedSize: product.variantes[selectedVariant].tamano,
-        finalPrice: product.variantes[selectedVariant].precio,
-      })
-    } else {
-      addToCart(product)
+    const item = {
+      ...product,
+      dietOptions: hasDietOptions ? { sinAzucar, sinGluten } : null,
+      dietLabel: hasDietOptions ? dietLabel : '',
     }
+    if (hasVariantes) {
+      item.selectedSize = product.variantes[selectedVariant].tamano
+      item.finalPrice = product.variantes[selectedVariant].precio
+    }
+    addToCart(item)
+    // Reset diet options after adding
+    setSinAzucar(false)
+    setSinGluten(false)
+    setSelectedVariant(0)
   }
 
   return (
@@ -54,7 +73,7 @@ function ProductCard({ product }) {
           </div>
         )}
 
-        {/* Selector de variantes */}
+        {/* Selector de tamaño */}
         {hasVariantes && (
           <div className="mt-4">
             <label className="mb-2 block text-xs font-medium text-marron/70">
@@ -74,6 +93,35 @@ function ProductCard({ product }) {
                   {variante.tamano}
                 </button>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Checkboxes de dieta */}
+        {hasDietOptions && (
+          <div className="mt-4">
+            <label className="mb-2 block text-xs font-medium text-marron/70">
+              Opciones de dieta:
+            </label>
+            <div className="space-y-2">
+              <label className="flex cursor-pointer items-center gap-2 text-sm text-marron">
+                <input
+                  type="checkbox"
+                  checked={sinAzucar}
+                  onChange={(e) => setSinAzucar(e.target.checked)}
+                  className="h-4 w-4 accent-rosa"
+                />
+                Sin Azúcar
+              </label>
+              <label className="flex cursor-pointer items-center gap-2 text-sm text-marron">
+                <input
+                  type="checkbox"
+                  checked={sinGluten}
+                  onChange={(e) => setSinGluten(e.target.checked)}
+                  className="h-4 w-4 accent-rosa"
+                />
+                Sin Gluten
+              </label>
             </div>
           </div>
         )}
