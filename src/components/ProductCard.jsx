@@ -151,8 +151,12 @@ function ProductCard({ product }) {
               Variantes:
             </label>
             <div className="flex flex-wrap gap-2">
-              {/* Sin Azúcar — oculto para Torta Chajá */}
-              {!isChaja && (
+              {/* Sin Azúcar */}
+              {isChaja ? (
+                <span className="inline-flex items-center rounded-full bg-verde/20 px-4 py-1.5 text-xs font-medium text-verde cursor-not-allowed" title="La Torta Chajá siempre es con azúcar">
+                  Sin Azúcar (no disponible)
+                </span>
+              ) : (
                 <button
                   onClick={() => setSinAzucar(!sinAzucar)}
                   className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
@@ -185,6 +189,11 @@ function ProductCard({ product }) {
             {isVasco && (
               <p className="mt-1 text-xs text-marron/50">
                 El Cheesecake Vasco siempre es sin gluten
+              </p>
+            )}
+            {isChaja && (
+              <p className="mt-1 text-xs text-marron/50">
+                La Torta Chajá siempre es con azúcar (tradicional)
               </p>
             )}
           </div>
