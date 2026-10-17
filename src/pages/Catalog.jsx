@@ -52,21 +52,27 @@ function Catalog() {
         </div>
       )}
 
-      {/* Filtros */}
-      <div className="mb-8 flex flex-wrap justify-center gap-3">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setActiveCategory(cat)}
-            className={`rounded-full px-5 py-2 text-sm font-medium transition ${
-              activeCategory === cat
-                ? 'bg-rosa text-oscuro shadow-md'
-                : 'bg-white text-marron hover:bg-rosaClaro'
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
+      {/* Filtros - Desktop: wrap | Mobile: horizontal scroll */}
+      <div className="mb-8 relative">
+        {/* Indicador de scroll derecho (mobile) */}
+        <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-crema to-transparent z-10 md:hidden" />
+        <div className="flex md:flex-wrap md:justify-center gap-2 overflow-x-auto pb-2 px-1 scrollbar-none whitespace-nowrap md:overflow-visible md:pb-0 md:px-0"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`rounded-full px-4 py-2 text-sm transition-all flex-shrink-0 ${
+                activeCategory === cat
+                  ? 'bg-amber-800 text-white shadow-sm font-medium'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Grid */}

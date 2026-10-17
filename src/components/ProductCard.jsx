@@ -49,8 +49,13 @@ function ProductCard({ product }) {
     (Array.isArray(product.permite_sin_azucar) && product.permite_sin_azucar[0] === true)
   )
 
-  // Reglas explícitas: Vasco siempre sin gluten, Chajá siempre con azúcar
-  const mustShowSinGluten = isVasco ? true : permiteSinGluten
+  // Regla fija: Vasco y Chipás siempre sin gluten (independiente de Airtable)
+  const isAlwaysGlutenFree =
+    nombreNormalizado.includes('vasco') ||
+    nombreNormalizado.includes('chipa')
+
+  // Reglas explícitas: Vasco/Chipa siempre sin gluten, Chajá siempre con azúcar
+  const mustShowSinGluten = isAlwaysGlutenFree ? true : permiteSinGluten
   const mustShowSinAzucar = isChaja ? false : permiteSinAzucar
 
   // Forzar sinAzucar a false si es Torta Chajá
@@ -66,7 +71,8 @@ function ProductCard({ product }) {
 
   const currentPrice = basePrice + adicionalesTotal
 
-  const dietLabel = getDietLabel(effectiveSinAzucar, sinGluten)
+  const effectiveSinGluten = isAlwaysGlutenFree ? true : sinGluten
+  const dietLabel = getDietLabel(effectiveSinAzucar, effectiveSinGluten)
 
   const toggleAdicional = (idx) => {
     setSelectedAdicionales((prev) =>
@@ -77,7 +83,7 @@ function ProductCard({ product }) {
   const handleAdd = () => {
     const item = {
       ...product,
-      dietOptions: hasDietOptions ? { sinAzucar: effectiveSinAzucar, sinGluten } : null,
+      dietOptions: hasDietOptions ? { sinAzucar: effectiveSinAzucar, sinGluten: isAlwaysGlutenFree ? true : sinGluten } : null,
       dietLabel: hasDietOptions ? dietLabel : '',
       cookingType: isChipa ? cookingType : null,
       selectedAdicionales: hasAdicionales ? selectedAdicionales.map((idx) => product.adicionales[idx]) : [],
