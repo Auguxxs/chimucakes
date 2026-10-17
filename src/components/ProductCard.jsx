@@ -29,6 +29,8 @@ function ProductCard({ product }) {
   const hasVariantes = product.variantes && product.variantes.length > 0
   const hasAdicionales = product.adicionales && product.adicionales.length > 0
   const hasDietOptions = DIET_CATEGORIES.includes(product.category)
+  const permiteSinGluten = product.permite_sin_gluten === true
+  const permiteSinAzucar = product.permite_sin_azucar === true
   const isChipa = product.category === CHIPA_CATEGORY
   const isVasco = product.name === VASCO_PRODUCT
   const nombreNormalizado = String(product.nombre || product.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -195,7 +197,7 @@ function ProductCard({ product }) {
             </label>
             <div className="flex flex-wrap gap-2">
               {/* Sin Azúcar */}
-              {isChaja || onlyGluten ? (
+              {!permiteSinAzucar ? null : isChaja || onlyGluten ? (
                 <span className="inline-flex items-center rounded-full bg-verde/20 px-4 py-1.5 text-xs font-medium text-verde cursor-not-allowed" title={isChaja ? 'La Torta Chajá siempre es con azúcar' : 'Los Vasitos no tienen opción Sin Azúcar'}>
                   Sin Azúcar (no disponible)
                 </span>
@@ -212,7 +214,7 @@ function ProductCard({ product }) {
                 </button>
               )}
               {/* Sin Gluten */}
-              {isVasco ? (
+              {!permiteSinGluten ? null : isVasco ? (
                 <span className="inline-flex items-center rounded-full bg-verde/20 px-4 py-1.5 text-xs font-medium text-verde cursor-not-allowed" title="El Cheesecake Vasco siempre es sin gluten">
                   Sin Gluten ✓
                 </span>
