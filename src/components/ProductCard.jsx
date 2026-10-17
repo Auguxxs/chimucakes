@@ -40,7 +40,9 @@ function ProductCard({ product }) {
     product.permite_sin_gluten === true ||
     product.permite_sin_gluten === 'true' ||
     String(product.permite_sin_gluten).toLowerCase() === 'true' ||
-    (Array.isArray(product.permite_sin_gluten) && product.permite_sin_gluten[0] === true)
+    (Array.isArray(product.permite_sin_gluten) && product.permite_sin_gluten[0] === true) ||
+    product.fields?.permite_sin_gluten === true ||
+    product.fields?.permite_sin_gluten === 'true'
   )
   const permiteSinAzucar = Boolean(
     product.permite_sin_azucar === true ||
@@ -53,10 +55,14 @@ function ProductCard({ product }) {
   const isAlwaysGlutenFree =
     nombreNormalizado.includes('vasco') ||
     nombreNormalizado.includes('chipa')
+  const isChipa = nombreNormalizado.includes('chipa')
 
   // Reglas explícitas: Vasco/Chipa siempre sin gluten, Chajá siempre con azúcar
   const mustShowSinGluten = isAlwaysGlutenFree ? true : permiteSinGluten
   const mustShowSinAzucar = isChaja ? false : permiteSinAzucar
+
+  // Clase estándar para badges fijos
+  const badgeBaseClass = 'inline-flex items-center gap-1.5 rounded-lg border-2 border-emerald-500 bg-emerald-100 px-4 py-2 text-sm font-bold text-emerald-900 cursor-not-allowed'
 
   // Forzar sinAzucar a false si es Torta Chajá
   const effectiveSinAzucar = isChaja ? false : sinAzucar
@@ -237,8 +243,8 @@ function ProductCard({ product }) {
                 </button>
               )}
               {/* Sin Gluten */}
-              {!mustShowSinGluten ? null : isVasco ? (
-                <span className="inline-flex items-center gap-1.5 rounded-lg border-2 border-emerald-500 bg-emerald-100 px-4 py-2 text-sm font-bold text-emerald-900 cursor-not-allowed" title="El Cheesecake Vasco siempre es sin gluten">
+              {!mustShowSinGluten ? null : isVasco || isChipa ? (
+                <span className={badgeBaseClass} title={isChipa ? 'Los Chipás siempre son sin gluten' : 'El Cheesecake Vasco siempre es sin gluten'}>
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-white text-xs">✓</span>
                   Sin Gluten
                 </span>
