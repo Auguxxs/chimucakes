@@ -26,7 +26,8 @@ function Checkout() {
         const price = item.finalPrice || item.price
         const sizeLabel = item.selectedSize ? ` (${item.selectedSize})` : ''
         const dietLabel = item.dietLabel ? ` (${item.dietLabel})` : ''
-        return `• ${item.quantity}x ${item.name}${sizeLabel}${dietLabel} — $${(price * item.quantity).toLocaleString('es-AR')}`
+        const adicionalesLabel = item.adicionalesLabel ? ` + ${item.adicionalesLabel}` : ''
+        return `• ${item.quantity}x ${item.name}${sizeLabel}${adicionalesLabel}${dietLabel} — $${(price * item.quantity).toLocaleString('es-AR')}`
       })
       .join('\n')
 
@@ -83,7 +84,8 @@ ${itemsText}
       .map((item) => {
         const sizeLabel = item.selectedSize ? ` (${item.selectedSize})` : ''
         const dietLabel = item.dietLabel ? ` (${item.dietLabel})` : ''
-        return `${item.quantity}x ${item.name}${sizeLabel}${dietLabel}`
+        const adicionalesLabel = item.adicionalesLabel ? ` + ${item.adicionalesLabel}` : ''
+        return `${item.quantity}x ${item.name}${sizeLabel}${adicionalesLabel}${dietLabel}`
       })
       .join(', ')
 

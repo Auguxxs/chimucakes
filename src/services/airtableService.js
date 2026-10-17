@@ -18,14 +18,13 @@ const headers = {
 const PLACEHOLDER_IMAGE = 'https://placehold.co/400x300/faf6f2/6d544f?text=ChimuCakes'
 
 /**
- * Parsea variantes/tamaños desde Airtable de forma defensiva.
+ * Parsea variantes/tamaños y adicionales desde Airtable de forma defensiva.
  * Soporta múltiples formatos:
- * - JSON string: '[{"tamano":"100gr","precio":2000}]'
- * - Array directo: [{tamano, precio}]
- * - Objeto con opciones_tamano: {opciones_tamano: [{label, precio}]}
+ * - Array directo: [{"tamano":"Mediano","precio":8500}]
+ * - Objeto con tamanos y adicionales: {"tamanos":[...], "adicionales":[{"nombre":"Glaseado","precio":2000}]}
  */
 function parseVariantes(variantesRaw) {
-  if (!variantesRaw) return null
+  if (!variantesRaw) return { tamanos: null, adicionales: null }
 
   let parsed = variantesRaw
 
@@ -35,30 +34,43 @@ function parseVariantes(variantesRaw) {
       parsed = JSON.parse(variantesRaw)
     } catch {
       console.warn('[Airtable] Error parseando variantes_json:', variantesRaw)
-      return null
+      return { tamanos: null, adicionales: null }
     }
   }
 
-  // Si es un array directo
+  // Si es un array directo (formato anterior)
   if (Array.isArray(parsed)) {
-    return parsed.map((v) => ({
-      tamano: v.tamano || v.label || v.nombre || 'Precio único',
-      precio: Number(v.precio) || 0,
-    }))
-  }
-
-  // Si es un objeto con opciones_tamano
-  if (parsed && typeof parsed === 'object') {
-    const opciones = parsed.opciones_tamano || parsed.opciones || parsed.variantes || parsed.tamanos
-    if (Array.isArray(opciones)) {
-      return opciones.map((v) => ({
+    return {
+      tamanos: parsed.map((v) => ({
         tamano: v.tamano || v.label || v.nombre || 'Precio único',
         precio: Number(v.precio) || 0,
-      }))
+      })),
+      adicionales: null,
     }
   }
 
-  return null
+  // Si es un objeto con tamanos y adicionales (nuevo formato)
+  if (parsed && typeof parsed === 'object') {
+    const tamanos = parsed.tamanos || parsed.opciones_tamano || parsed.opciones || parsed.variantes
+    const adicionales = parsed.adicionales || parsed.extras || null
+
+    return {
+      tamanos: Array.isArray(tamanos)
+        ? tamanos.map((v) => ({
+            tamano: v.tamano || v.label || v.nombre || 'Precio único',
+            precio: Number(v.precio) || 0,
+          }))
+        : null,
+      adicionales: Array.isArray(adicionales)
+        ? adicionales.map((a) => ({
+            nombre: a.nombre || a.name || a.label || 'Adicional',
+            precio: Number(a.precio) || 0,
+          }))
+        : null,
+    }
+  }
+
+  return { tamanos: null, adicionales: null }
 }
 
 /**
@@ -130,8 +142,8 @@ export async function getProducts() {
         category: categoria,
         imagen_url: imagenUrl,
         image: imagenUrl,
-        variantes: parseVariantes(fields.variantes_json),
-        variantes_raw: fields.variantes_json,
+        variantes: parseVariantes(fields.variantes_json).tamanos,
+        adicionales: parseVariantes(fields.variantes_json).adicionales,
       }
     })
   } catch (error) {

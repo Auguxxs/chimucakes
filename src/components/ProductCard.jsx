@@ -23,24 +23,36 @@ function ProductCard({ product }) {
   const [sinAzucar, setSinAzucar] = useState(false)
   const [sinGluten, setSinGluten] = useState(false)
   const [cookingType, setCookingType] = useState('Horneado')
+  const [selectedAdicionales, setSelectedAdicionales] = useState([])
 
   const hasVariantes = product.variantes && product.variantes.length > 0
+  const hasAdicionales = product.adicionales && product.adicionales.length > 0
   const hasDietOptions = DIET_CATEGORIES.includes(product.category)
   const isChipa = product.category === CHIPA_CATEGORY
   const isVasco = product.name === VASCO_PRODUCT
   const nombreNormalizado = String(product.nombre || product.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   const isChaja = nombreNormalizado.includes('chaja')
 
-  console.log('Producto actual:', product.nombre || product.name, '| Es Chajá:', isChaja)
-
   // Forzar sinAzucar a false si es Torta Chajá
   const effectiveSinAzucar = isChaja ? false : sinAzucar
 
-  const currentPrice = hasVariantes
+  const basePrice = hasVariantes
     ? product.variantes[selectedVariant].precio
     : product.price
 
+  const adicionalesTotal = selectedAdicionales.reduce((sum, idx) => {
+    return sum + (product.adicionales?.[idx]?.precio || 0)
+  }, 0)
+
+  const currentPrice = basePrice + adicionalesTotal
+
   const dietLabel = getDietLabel(effectiveSinAzucar, sinGluten)
+
+  const toggleAdicional = (idx) => {
+    setSelectedAdicionales((prev) =>
+      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
+    )
+  }
 
   const handleAdd = () => {
     const item = {
@@ -48,10 +60,14 @@ function ProductCard({ product }) {
       dietOptions: hasDietOptions ? { sinAzucar: effectiveSinAzucar, sinGluten } : null,
       dietLabel: hasDietOptions ? dietLabel : '',
       cookingType: isChipa ? cookingType : null,
+      selectedAdicionales: hasAdicionales ? selectedAdicionales.map((idx) => product.adicionales[idx]) : [],
+      adicionalesLabel: hasAdicionales
+        ? selectedAdicionales.map((idx) => product.adicionales[idx].nombre).join(' + ')
+        : '',
     }
     if (hasVariantes) {
       item.selectedSize = product.variantes[selectedVariant].tamano
-      item.finalPrice = product.variantes[selectedVariant].precio
+      item.finalPrice = currentPrice
     }
     if (isChipa) {
       item.selectedSize = `${product.variantes[selectedVariant].tamano} (${cookingType})`
@@ -62,6 +78,7 @@ function ProductCard({ product }) {
     setSinGluten(false)
     setSelectedVariant(0)
     setCookingType('Horneado')
+    setSelectedAdicionales([])
   }
 
   return (
@@ -114,6 +131,30 @@ function ProductCard({ product }) {
                   }`}
                 >
                   {variante.tamano}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Adicionales */}
+        {hasAdicionales && (
+          <div className="mt-4">
+            <label className="mb-2 block text-xs font-medium text-marron/70">
+              Adicionales:
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {product.adicionales.map((adicional, idx) => (
+                <button
+                  key={adicional.nombre}
+                  onClick={() => toggleAdicional(idx)}
+                  className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
+                    selectedAdicionales.includes(idx)
+                      ? 'bg-lima text-oscuro shadow-sm'
+                      : 'bg-crema text-marron hover:bg-lima/30'
+                  }`}
+                >
+                  {adicional.nombre} (+${adicional.precio.toLocaleString('es-AR')})
                 </button>
               ))}
             </div>
