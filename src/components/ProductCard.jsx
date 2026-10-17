@@ -186,10 +186,10 @@ function ProductCard({ product }) {
           </div>
         )}
 
-        {/* Opciones dietarias (toggle individuales, independientes de categorías y variantes) */}
+        {/* Variantes (toggle individuales, independientes de categorías y tamaños) */}
         <div className="mt-4">
           <label className="mb-2 block text-xs font-medium text-marron/70">
-            Opciones de dieta:
+            Variantes:
           </label>
           <div className="flex flex-wrap gap-2">
             {/* Sin Azúcar */}
