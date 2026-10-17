@@ -65,8 +65,8 @@ function Catalog() {
               onClick={() => setActiveCategory(cat)}
               className={`rounded-full px-4 py-2 text-sm transition-all flex-shrink-0 ${
                 activeCategory === cat
-                  ? 'bg-amber-800 text-white shadow-sm font-medium'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-rosa text-oscuro shadow-md font-semibold'
+                  : 'bg-rosaClaro/50 text-marron hover:bg-rosaClaro border border-marron/10'
               }`}
             >
               {cat}
