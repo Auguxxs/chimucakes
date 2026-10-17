@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useCart } from '../context/CartContext'
 
-const DIET_CATEGORIES = ['Budines', 'Tortas', 'Cheesecakes']
+const DIET_CATEGORIES = ['Budines', 'Tortas', 'Cheesecakes', 'Alfajores', 'Vasitos']
 const CHIPA_CATEGORY = 'Chipas'
 const VASCO_PRODUCT = 'Cheesecake Vasco'
+const ONLY_GLUTEN_CATEGORIES = ['Vasitos']
 
 // Normaliza texto: minúsculas y sin acentos
 function normalizeText(str) {
@@ -32,6 +33,7 @@ function ProductCard({ product }) {
   const isVasco = product.name === VASCO_PRODUCT
   const nombreNormalizado = String(product.nombre || product.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   const isChaja = nombreNormalizado.includes('chaja')
+  const onlyGluten = ONLY_GLUTEN_CATEGORIES.includes(product.category)
 
   // Forzar sinAzucar a false si es Torta Chajá
   const effectiveSinAzucar = isChaja ? false : sinAzucar
@@ -193,8 +195,8 @@ function ProductCard({ product }) {
             </label>
             <div className="flex flex-wrap gap-2">
               {/* Sin Azúcar */}
-              {isChaja ? (
-                <span className="inline-flex items-center rounded-full bg-verde/20 px-4 py-1.5 text-xs font-medium text-verde cursor-not-allowed" title="La Torta Chajá siempre es con azúcar">
+              {isChaja || onlyGluten ? (
+                <span className="inline-flex items-center rounded-full bg-verde/20 px-4 py-1.5 text-xs font-medium text-verde cursor-not-allowed" title={isChaja ? 'La Torta Chajá siempre es con azúcar' : 'Los Vasitos no tienen opción Sin Azúcar'}>
                   Sin Azúcar (no disponible)
                 </span>
               ) : (
