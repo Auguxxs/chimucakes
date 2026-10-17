@@ -29,9 +29,9 @@ function ProductCard({ product }) {
   const hasVariantes = product.variantes && product.variantes.length > 0
   const hasAdicionales = product.adicionales && product.adicionales.length > 0
   const hasDietOptions = DIET_CATEGORIES.includes(product.category)
-  const isChipa = nombreNormalizado.includes('chipa')
   const nombreNormalizado = String(product.nombre || product.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   const isVasco = nombreNormalizado.includes('vasco')
+  const isChipa = nombreNormalizado.includes('chipa')
   const isChaja = nombreNormalizado.includes('chaja')
   const onlyGluten = ONLY_GLUTEN_CATEGORIES.includes(product.category)
 
@@ -224,7 +224,7 @@ function ProductCard({ product }) {
             <div className="flex flex-wrap gap-2">
               {/* Sin Azúcar */}
               {!mustShowSinAzucar ? null : isChaja || onlyGluten ? (
-                <span className="inline-flex items-center gap-1.5 rounded-lg border-2 border-emerald-500 bg-emerald-100 px-4 py-2 text-sm font-bold text-emerald-900 cursor-not-allowed" title={isChaja ? 'La Torta Chajá siempre es con azúcar' : 'Los Vasitos no tienen opción Sin Azúcar'}>
+                <span className={badgeBaseClass} title={isChaja ? 'La Torta Chajá siempre es con azúcar' : 'Los Vasitos no tienen opción Sin Azúcar'}>
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-white text-xs">✓</span>
                   {isChaja ? 'Con Azúcar' : 'Sin Azúcar (no disponible)'}
                 </span>
