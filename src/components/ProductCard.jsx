@@ -18,6 +18,16 @@ function getDietLabel(sinAzucar, sinGluten) {
   return ''
 }
 
+// Componente unificado para badges destacados de productos especiales
+function SpecialBadge({ text }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold bg-emerald-100 text-emerald-900 border-2 border-emerald-500 shadow-sm my-1">
+      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-white text-[10px]">✓</span>
+      {text}
+    </span>
+  )
+}
+
 function ProductCard({ product }) {
   const { addToCart } = useCart()
   const [selectedVariant, setSelectedVariant] = useState(0)
@@ -25,6 +35,9 @@ function ProductCard({ product }) {
   const [sinGluten, setSinGluten] = useState(false)
   const [cookingType, setCookingType] = useState('Horneado')
   const [selectedAdicionales, setSelectedAdicionales] = useState([])
+
+  // DEBUG temporal para inspeccionar payload de Airtable
+  console.log('[DEBUG AIRTABLE PRODUCT]:', product.nombre || product.name, product.fields || product)
 
   const hasVariantes = product.variantes && product.variantes.length > 0
   const hasAdicionales = product.adicionales && product.adicionales.length > 0
@@ -35,14 +48,16 @@ function ProductCard({ product }) {
   const isChaja = nombreNormalizado.includes('chaja')
   const onlyGluten = ONLY_GLUTEN_CATEGORIES.includes(product.category)
 
-  // Evaluación robusta de permite_sin_gluten (todas las variaciones de Airtable)
+  // Evaluación ultra defensiva de permite_sin_gluten (todas las variaciones de Airtable)
   const permiteSinGluten = Boolean(
-    product.permite_sin_gluten === true ||
-    product.permite_sin_gluten === 'true' ||
-    String(product.permite_sin_gluten).toLowerCase() === 'true' ||
-    (Array.isArray(product.permite_sin_gluten) && product.permite_sin_gluten[0] === true) ||
-    product.fields?.permite_sin_gluten === true ||
-    product.fields?.permite_sin_gluten === 'true'
+    product.permite_sin_gluten ||
+    product['permite_sin_gluten'] ||
+    product['Permite sin gluten'] ||
+    product['Permite Sin Gluten'] ||
+    product['Sin Gluten'] ||
+    product.fields?.['permite_sin_gluten'] ||
+    product.fields?.['Permite sin gluten'] ||
+    product.fields?.['Sin Gluten']
   )
   const permiteSinAzucar = Boolean(
     product.permite_sin_azucar === true ||
@@ -59,8 +74,7 @@ function ProductCard({ product }) {
   const mustShowSinGluten = isAlwaysGlutenFree ? true : permiteSinGluten
   const mustShowSinAzucar = isChaja ? false : permiteSinAzucar
 
-  // Clase estándar para badges fijos
-  const badgeBaseClass = 'inline-flex items-center gap-1.5 rounded-lg border-2 border-emerald-500 bg-emerald-100 px-4 py-2 text-sm font-bold text-emerald-900 cursor-not-allowed'
+
 
   // Forzar sinAzucar a false si es Torta Chajá
   const effectiveSinAzucar = isChaja ? false : sinAzucar
@@ -224,10 +238,7 @@ function ProductCard({ product }) {
             <div className="flex flex-wrap gap-2">
               {/* Sin Azúcar */}
               {!mustShowSinAzucar ? null : isChaja || onlyGluten ? (
-                <span className={badgeBaseClass} title={isChaja ? 'La Torta Chajá siempre es con azúcar' : 'Los Vasitos no tienen opción Sin Azúcar'}>
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-white text-xs">✓</span>
-                  {isChaja ? 'Con Azúcar' : 'Sin Azúcar (no disponible)'}
-                </span>
+                <SpecialBadge text={isChaja ? 'Con Azúcar' : 'Sin Azúcar (no disponible)'} />
               ) : (
                 <button
                   onClick={() => setSinAzucar(!sinAzucar)}
@@ -242,10 +253,7 @@ function ProductCard({ product }) {
               )}
               {/* Sin Gluten */}
               {!mustShowSinGluten ? null : isVasco || isChipa ? (
-                <span className={badgeBaseClass} title={isChipa ? 'Los Chipás siempre son sin gluten' : 'El Cheesecake Vasco siempre es sin gluten'}>
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-white text-xs">✓</span>
-                  Sin Gluten
-                </span>
+                <SpecialBadge text="Sin Gluten" />
               ) : (
                 <button
                   onClick={() => setSinGluten(!sinGluten)}
