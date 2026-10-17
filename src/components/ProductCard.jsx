@@ -37,6 +37,9 @@ function ProductCard({ product }) {
     product.fields?.permite_sin_azucar === 'true'
   )
 
+  // Debug temporal para inspeccionar badge_texto
+  console.log('[DEBUG BADGE]:', product.nombre, product.badge_texto, product.fields)
+
   // Lectura dinámica de badge_texto desde Airtable (múltiples variaciones de columna)
   const badgeTexto = Boolean(
     product.badge_texto ||

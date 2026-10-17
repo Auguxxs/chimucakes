@@ -146,6 +146,7 @@ export async function getProducts() {
         adicionales: parseVariantes(fields.variantes_json).adicionales,
         permite_sin_gluten: fields.permite_sin_gluten === true,
         permite_sin_azucar: fields.permite_sin_azucar === true,
+        badge_texto: fields.badge_texto || null,
       }
     })
   } catch (error) {
