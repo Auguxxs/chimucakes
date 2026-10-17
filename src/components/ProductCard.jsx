@@ -29,7 +29,7 @@ function ProductCard({ product }) {
   const hasVariantes = product.variantes && product.variantes.length > 0
   const hasAdicionales = product.adicionales && product.adicionales.length > 0
   const hasDietOptions = DIET_CATEGORIES.includes(product.category)
-  const isChipa = product.category === CHIPA_CATEGORY
+  const isChipa = nombreNormalizado.includes('chipa')
   const nombreNormalizado = String(product.nombre || product.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   const isVasco = nombreNormalizado.includes('vasco')
   const isChaja = nombreNormalizado.includes('chaja')
@@ -55,8 +55,6 @@ function ProductCard({ product }) {
   const isAlwaysGlutenFree =
     nombreNormalizado.includes('vasco') ||
     nombreNormalizado.includes('chipa')
-  const isChipa = nombreNormalizado.includes('chipa')
-
   // Reglas explícitas: Vasco/Chipa siempre sin gluten, Chajá siempre con azúcar
   const mustShowSinGluten = isAlwaysGlutenFree ? true : permiteSinGluten
   const mustShowSinAzucar = isChaja ? false : permiteSinAzucar
