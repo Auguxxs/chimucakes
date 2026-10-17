@@ -1,31 +1,11 @@
 import { useState } from 'react'
 import { useCart } from '../context/CartContext'
 
-const DIET_CATEGORIES = ['Budines', 'Tortas', 'Cheesecakes', 'Alfajores', 'Vasitos']
-const CHIPA_CATEGORY = 'Chipas'
-const VASCO_PRODUCT = 'Cheesecake Vasco'
-const ONLY_GLUTEN_CATEGORIES = ['Vasitos']
-
-// Normaliza texto: minúsculas y sin acentos
-function normalizeText(str) {
-  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
-}
-
 function getDietLabel(sinAzucar, sinGluten) {
   if (sinAzucar && sinGluten) return 'Sin Azúcar y Sin Gluten'
   if (sinAzucar) return 'Sin Azúcar'
   if (sinGluten) return 'Sin Gluten'
   return ''
-}
-
-// Componente unificado para badges destacados de productos especiales
-function SpecialBadge({ text }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold bg-emerald-100 text-emerald-900 border-2 border-emerald-500 shadow-sm my-1">
-      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-white text-[10px]">✓</span>
-      {text}
-    </span>
-  )
 }
 
 function ProductCard({ product }) {
@@ -36,48 +16,26 @@ function ProductCard({ product }) {
   const [cookingType, setCookingType] = useState('Horneado')
   const [selectedAdicionales, setSelectedAdicionales] = useState([])
 
-  // DEBUG temporal para inspeccionar payload de Airtable
-  console.log('[DEBUG AIRTABLE PRODUCT]:', product.nombre || product.name, product.fields || product)
-
   const hasVariantes = product.variantes && product.variantes.length > 0
   const hasAdicionales = product.adicionales && product.adicionales.length > 0
-  const hasDietOptions = DIET_CATEGORIES.includes(product.category)
-  const nombreNormalizado = String(product.nombre || product.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-  const isVasco = nombreNormalizado.includes('vasco')
-  const isChipa = nombreNormalizado.includes('chipa')
-  const isChaja = nombreNormalizado.includes('chaja')
-  const onlyGluten = ONLY_GLUTEN_CATEGORIES.includes(product.category)
 
-  // Evaluación ultra defensiva de permite_sin_gluten (todas las variaciones de Airtable)
+  // Evaluación defensiva de permite_sin_gluten y permite_sin_azucar desde Airtable
   const permiteSinGluten = Boolean(
-    product.permite_sin_gluten ||
-    product['permite_sin_gluten'] ||
-    product['Permite sin gluten'] ||
-    product['Permite Sin Gluten'] ||
-    product['Sin Gluten'] ||
-    product.fields?.['permite_sin_gluten'] ||
-    product.fields?.['Permite sin gluten'] ||
-    product.fields?.['Sin Gluten']
+    product.permite_sin_gluten === true ||
+    product.permite_sin_gluten === 'true' ||
+    String(product.permite_sin_gluten).toLowerCase() === 'true' ||
+    (Array.isArray(product.permite_sin_gluten) && product.permite_sin_gluten[0] === true) ||
+    product.fields?.permite_sin_gluten === true ||
+    product.fields?.permite_sin_gluten === 'true'
   )
   const permiteSinAzucar = Boolean(
     product.permite_sin_azucar === true ||
     product.permite_sin_azucar === 'true' ||
     String(product.permite_sin_azucar).toLowerCase() === 'true' ||
-    (Array.isArray(product.permite_sin_azucar) && product.permite_sin_azucar[0] === true)
+    (Array.isArray(product.permite_sin_azucar) && product.permite_sin_azucar[0] === true) ||
+    product.fields?.permite_sin_azucar === true ||
+    product.fields?.permite_sin_azucar === 'true'
   )
-
-  // Regla fija: Vasco y Chipás siempre sin gluten (independiente de Airtable)
-  const isAlwaysGlutenFree =
-    nombreNormalizado.includes('vasco') ||
-    nombreNormalizado.includes('chipa')
-  // Reglas explícitas: Vasco/Chipa siempre sin gluten, Chajá siempre con azúcar
-  const mustShowSinGluten = isAlwaysGlutenFree ? true : permiteSinGluten
-  const mustShowSinAzucar = isChaja ? false : permiteSinAzucar
-
-
-
-  // Forzar sinAzucar a false si es Torta Chajá
-  const effectiveSinAzucar = isChaja ? false : sinAzucar
 
   const basePrice = hasVariantes
     ? product.variantes[selectedVariant].precio
@@ -89,8 +47,7 @@ function ProductCard({ product }) {
 
   const currentPrice = basePrice + adicionalesTotal
 
-  const effectiveSinGluten = isAlwaysGlutenFree ? true : sinGluten
-  const dietLabel = getDietLabel(effectiveSinAzucar, effectiveSinGluten)
+  const dietLabel = getDietLabel(sinAzucar, sinGluten)
 
   const toggleAdicional = (idx) => {
     setSelectedAdicionales((prev) =>
@@ -101,9 +58,12 @@ function ProductCard({ product }) {
   const handleAdd = () => {
     const item = {
       ...product,
-      dietOptions: hasDietOptions ? { sinAzucar: effectiveSinAzucar, sinGluten: isAlwaysGlutenFree ? true : sinGluten } : null,
-      dietLabel: hasDietOptions ? dietLabel : '',
-      cookingType: isChipa ? cookingType : null,
+      dietOptions: {
+        sinAzucar,
+        sinGluten,
+      },
+      dietLabel,
+      cookingType: cookingType || null,
       selectedAdicionales: hasAdicionales ? selectedAdicionales.map((idx) => product.adicionales[idx]) : [],
       adicionalesLabel: hasAdicionales
         ? selectedAdicionales.map((idx) => product.adicionales[idx].nombre).join(' + ')
@@ -112,9 +72,6 @@ function ProductCard({ product }) {
     if (hasVariantes) {
       item.selectedSize = product.variantes[selectedVariant].tamano
       item.finalPrice = currentPrice
-    }
-    if (isChipa) {
-      item.selectedSize = `${product.variantes[selectedVariant].tamano} (${cookingType})`
     }
     addToCart(item)
     // Reset options after adding
@@ -205,8 +162,44 @@ function ProductCard({ product }) {
           </div>
         )}
 
-        {/* Tipo de cocción (solo Chipá) */}
-        {isChipa && (
+        {/* Opciones dietarias (toggle individuales, independientes de categorías y variantes) */}
+        <div className="mt-4">
+          <label className="mb-2 block text-xs font-medium text-marron/70">
+            Opciones de dieta:
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {/* Sin Azúcar */}
+            {permiteSinAzucar ? (
+              <button
+                onClick={() => setSinAzucar(!sinAzucar)}
+                className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
+                  sinAzucar
+                    ? 'bg-rosa text-oscuro shadow-sm'
+                    : 'bg-rosaClaro/50 text-marron hover:bg-rosaClaro'
+                }`}
+              >
+                Sin Azúcar
+              </button>
+            ) : null}
+
+            {/* Sin Gluten */}
+            {permiteSinGluten ? (
+              <button
+                onClick={() => setSinGluten(!sinGluten)}
+                className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
+                  sinGluten
+                    ? 'bg-rosa text-oscuro shadow-sm'
+                    : 'bg-rosaClaro/50 text-marron hover:bg-rosaClaro'
+                }`}
+              >
+                Sin Gluten
+              </button>
+            ) : null}
+          </div>
+        </div>
+
+        {/* Tipo de cocción (solo Chipá si tiene variantes) */}
+        {hasVariantes && product.category === 'Chipas' && (
           <div className="mt-4">
             <label className="mb-2 block text-xs font-medium text-marron/70">
               Tipo de cocción:
@@ -226,57 +219,6 @@ function ProductCard({ product }) {
                 </button>
               ))}
             </div>
-          </div>
-        )}
-
-        {/* Variantes (checkboxes como pills) */}
-        {hasDietOptions && (
-          <div className="mt-4">
-            <label className="mb-2 block text-xs font-medium text-marron/70">
-              Variantes:
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {/* Sin Azúcar */}
-              {!mustShowSinAzucar ? null : isChaja || onlyGluten ? (
-                <SpecialBadge text={isChaja ? 'Con Azúcar' : 'Sin Azúcar (no disponible)'} />
-              ) : (
-                <button
-                  onClick={() => setSinAzucar(!sinAzucar)}
-                  className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
-                    sinAzucar
-                      ? 'bg-rosa text-oscuro shadow-sm'
-                      : 'bg-rosaClaro/50 text-marron hover:bg-rosaClaro'
-                  }`}
-                >
-                  Sin Azúcar
-                </button>
-              )}
-              {/* Sin Gluten */}
-              {!mustShowSinGluten ? null : isVasco || isChipa ? (
-                <SpecialBadge text="Sin Gluten" />
-              ) : (
-                <button
-                  onClick={() => setSinGluten(!sinGluten)}
-                  className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
-                    sinGluten
-                      ? 'bg-rosa text-oscuro shadow-sm'
-                      : 'bg-rosaClaro/50 text-marron hover:bg-rosaClaro'
-                  }`}
-                >
-                  Sin Gluten
-                </button>
-              )}
-            </div>
-            {isVasco && (
-              <p className="mt-1 text-xs text-marron/50">
-                El Cheesecake Vasco siempre es sin gluten
-              </p>
-            )}
-            {isChaja && (
-              <p className="mt-1 text-xs text-emerald-700 font-medium">
-                La Torta Chajá siempre es con azúcar (tradicional)
-              </p>
-            )}
           </div>
         )}
 
