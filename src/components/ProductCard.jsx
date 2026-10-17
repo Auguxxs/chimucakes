@@ -29,19 +29,19 @@ function ProductCard({ product }) {
   const hasVariantes = product.variantes && product.variantes.length > 0
   const hasAdicionales = product.adicionales && product.adicionales.length > 0
   const hasDietOptions = DIET_CATEGORIES.includes(product.category)
-  const permiteSinGluten = Boolean(
+  const tieneSinGluten = Boolean(
     product.permite_sin_gluten === true ||
     product.permite_sin_gluten === 'true' ||
-    (Array.isArray(product.permite_sin_gluten) && product.permite_sin_gluten[0] === true)
+    String(product.permite_sin_gluten).toLowerCase() === 'true'
   )
-  const permiteSinAzucar = Boolean(
+  const tieneSinAzucar = Boolean(
     product.permite_sin_azucar === true ||
     product.permite_sin_azucar === 'true' ||
-    (Array.isArray(product.permite_sin_azucar) && product.permite_sin_azucar[0] === true)
+    String(product.permite_sin_azucar).toLowerCase() === 'true'
   )
   const isChipa = product.category === CHIPA_CATEGORY
-  const isVasco = product.name === VASCO_PRODUCT
   const nombreNormalizado = String(product.nombre || product.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  const isVasco = nombreNormalizado.includes('vasco')
   const isChaja = nombreNormalizado.includes('chaja')
   const onlyGluten = ONLY_GLUTEN_CATEGORIES.includes(product.category)
 
@@ -205,8 +205,9 @@ function ProductCard({ product }) {
             </label>
             <div className="flex flex-wrap gap-2">
               {/* Sin Azúcar */}
-              {!permiteSinAzucar ? null : isChaja || onlyGluten ? (
-                <span className="inline-flex items-center rounded-full bg-emerald-50 border border-emerald-200 px-4 py-1.5 text-xs font-bold text-emerald-700 cursor-not-allowed" title={isChaja ? 'La Torta Chajá siempre es con azúcar' : 'Los Vasitos no tienen opción Sin Azúcar'}>
+              {!tieneSinAzucar ? null : isChaja || onlyGluten ? (
+                <span className="inline-flex items-center gap-1.5 rounded-lg border-2 border-emerald-500 bg-emerald-100 px-4 py-2 text-sm font-bold text-emerald-900 cursor-not-allowed" title={isChaja ? 'La Torta Chajá siempre es con azúcar' : 'Los Vasitos no tienen opción Sin Azúcar'}>
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-white text-xs">✓</span>
                   {isChaja ? 'Con Azúcar' : 'Sin Azúcar (no disponible)'}
                 </span>
               ) : (
@@ -222,9 +223,10 @@ function ProductCard({ product }) {
                 </button>
               )}
               {/* Sin Gluten */}
-              {!permiteSinGluten ? null : isVasco ? (
-                <span className="inline-flex items-center rounded-full bg-emerald-50 border border-emerald-200 px-4 py-1.5 text-xs font-bold text-emerald-700 cursor-not-allowed" title="El Cheesecake Vasco siempre es sin gluten">
-                  Sin Gluten ✓
+              {!tieneSinGluten ? null : isVasco ? (
+                <span className="inline-flex items-center gap-1.5 rounded-lg border-2 border-emerald-500 bg-emerald-100 px-4 py-2 text-sm font-bold text-emerald-900 cursor-not-allowed" title="El Cheesecake Vasco siempre es sin gluten">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-white text-xs">✓</span>
+                  Sin Gluten
                 </span>
               ) : (
                 <button
