@@ -37,6 +37,25 @@ function ProductCard({ product }) {
     product.fields?.permite_sin_azucar === 'true'
   )
 
+  // Lectura dinámica de badge_texto desde Airtable (múltiples variaciones de columna)
+  const badgeTexto = Boolean(
+    product.badge_texto ||
+    product['badge_texto'] ||
+    product['Etiqueta'] ||
+    product['badge'] ||
+    product.fields?.badge_texto ||
+    product.fields?.Etiqueta ||
+    product.fields?.badge
+  ) ? (
+    product.badge_texto ||
+    product['badge_texto'] ||
+    product['Etiqueta'] ||
+    product['badge'] ||
+    product.fields?.badge_texto ||
+    product.fields?.Etiqueta ||
+    product.fields?.badge
+  ) : ''
+
   const basePrice = hasVariantes
     ? product.variantes[selectedVariant].precio
     : product.price
@@ -98,6 +117,11 @@ function ProductCard({ product }) {
         <h3 className="font-display text-lg font-semibold text-marron">
           {product.name}
         </h3>
+        {badgeTexto && (
+          <div className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-900 border-2 border-emerald-500 font-bold px-3 py-1 rounded-lg text-xs md:text-sm shadow-sm my-1.5">
+            {badgeTexto}
+          </div>
+        )}
         <p className="mt-2 text-sm text-marron/70">
           {product.description}
         </p>
