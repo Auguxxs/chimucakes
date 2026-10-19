@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext'
 import { createOrder } from '../services/airtableService'
 
 function Checkout() {
-  const { items, totalPrice, clearCart } = useCart()
+  const { items, totalPrice, clearCart, tiendaActiva, mensajeCierre } = useCart()
   const navigate = useNavigate()
   const [form, setForm] = useState({
     customerName: '',
@@ -64,6 +64,11 @@ ${itemsText}
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+
+    if (!tiendaActiva) {
+      setError('La tienda está cerrada. No se pueden realizar pedidos en este momento.')
+      return
+    }
 
     if (!form.customerName || !form.deliveryDate) {
       setError('Completá todos los campos obligatorios')
@@ -137,6 +142,22 @@ ${itemsText}
         {/* Formulario */}
         <form onSubmit={handleSubmit} className="card p-6">
           <h2 className="font-display text-xl font-semibold text-marron">Tus Datos</h2>
+
+          {!tiendaActiva && (
+            <div className="rounded-lg border-2 border-lima bg-lima/20 p-4 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">⚠️</span>
+                <span className="text-sm font-semibold text-oscuro">
+                  Tienda pausada
+                </span>
+              </div>
+              {mensajeCierre && (
+                <p className="mt-1 text-xs text-marron/70">
+                  {mensajeCierre}
+                </p>
+              )}
+            </div>
+          )}
 
           <div className="mt-4 space-y-4">
             <div>
@@ -249,11 +270,16 @@ ${itemsText}
 
           <button
             type="submit"
-            disabled={sending}
-            className="btn-whatsapp mt-6 w-full disabled:opacity-50"
+            disabled={sending || !tiendaActiva}
+            className={`w-full py-2 rounded-full font-medium transition ${!tiendaActiva ? 'bg-gray-400 text-gray-200 cursor-not-allowed' : 'btn-whatsapp'}`}
           >
-            {sending ? (
-              'Enviando...'
+            {!tiendaActiva ? (
+              'Tienda pausada'
+            ) : sending ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-oscuro border-t-transparent" />
+                Enviando...
+              </span>
             ) : (
               <>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">

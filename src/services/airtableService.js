@@ -419,7 +419,7 @@ export async function updateOrderStatus(orderId, newStatus) {
  */
 export async function getStoreConfig() {
   if (!isConfigured) {
-    console.log('[Airtable] No configurado, usando tienda activa por defecto')
+    console.log('[CONFIG TIENDA]:', { tiendaActiva: true, mensajeCierre: '', origen: 'sin configuracion' })
     return { tienda_activa: true, mensaje_cierre: '' }
   }
 
@@ -440,13 +440,16 @@ export async function getStoreConfig() {
     const records = data.records || []
 
     if (records.length === 0) {
-      console.log('[Airtable] No hay registros en configuracion, usando tienda activa por defecto')
+      console.log('[CONFIG TIENDA]:', { tiendaActiva: true, mensajeCierre: '', origen: 'sin registros' })
       return { tienda_activa: true, mensaje_cierre: '' }
     }
 
     const fields = records[0].fields || {}
-    const tiendaActiva = fields.tienda_activa !== false
+    // Checkbox desmarcado en Airtable devuelve undefined/null, no false
+    const tiendaActiva = Boolean(fields.tienda_activa === true)
     const mensajeCierre = fields.mensaje_cierre || ''
+
+    console.log('[CONFIG TIENDA]:', { tiendaActiva, mensajeCierre, origen: 'airtable' })
 
     return { tienda_activa: tiendaActiva, mensaje_cierre: mensajeCierre }
   } catch (error) {

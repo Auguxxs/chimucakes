@@ -21,8 +21,9 @@ export function CartProvider({ children }) {
   const loadStoreConfig = useCallback(async () => {
     try {
       const config = await getStoreConfig()
-      setTiendaActiva(config.tienda_activa !== false)
+      setTiendaActiva(Boolean(config.tienda_activa === true))
       setMensajeCierre(config.mensaje_cierre || '')
+      console.log('[CONFIG TIENDA CLIENTE]:', { tiendaActiva: config.tienda_activa, mensajeCierre: config.mensaje_cierre })
     } catch (err) {
       console.error('[CartContext] Error cargando configuración de tienda:', err)
       setTiendaActiva(true)
