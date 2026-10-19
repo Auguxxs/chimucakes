@@ -186,7 +186,6 @@ function OrderStats({ orders }) {
             className="input-field w-auto appearance-none pl-9 pr-8 text-sm"
           >
             <option value="Todos">Todos</option>
-            <option value="Este mes">Este mes</option>
             {MONTHS.map((month) => (
               <option key={month} value={month}>{month}</option>
             ))}

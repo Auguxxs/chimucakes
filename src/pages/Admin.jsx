@@ -105,14 +105,13 @@ function OrderModal({ order, onClose, onSave, loading }) {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-marron">Teléfono *</label>
+            <label className="mb-1 block text-sm font-medium text-marron">Teléfono</label>
             <input
               type="tel"
               name="phone"
               value={form.phone}
               onChange={handleChange}
               className="input-field"
-              required
             />
           </div>
 
