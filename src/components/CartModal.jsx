@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 
 function CartModal() {
-  const { items, isCartOpen, closeCart, updateQuantity, removeFromCart, totalPrice } = useCart()
+  const { items, isCartOpen, closeCart, updateQuantity, removeFromCart, totalPrice, tiendaActiva, mensajeCierre } = useCart()
   const navigate = useNavigate()
 
   if (!isCartOpen) return null
@@ -34,6 +34,23 @@ function CartModal() {
             </svg>
           </button>
         </div>
+
+        {/* Banner de tienda cerrada */}
+        {!tiendaActiva && (
+          <div className="p-4 rounded-xl border-2 border-lima bg-lima/20 mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">⚠️</span>
+              <span className="text-sm font-semibold text-oscuro">
+                Tienda cerrada
+              </span>
+            </div>
+            {mensajeCierre && (
+              <p className="mt-1 text-xs text-marron/70">
+                {mensajeCierre}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Items */}
         <div className="flex-1 overflow-y-auto p-6">
@@ -122,9 +139,10 @@ function CartModal() {
             </div>
             <button
               onClick={handleCheckout}
-              className="btn-primary w-full"
+              disabled={!tiendaActiva}
+              className={`w-full py-2 rounded-full font-medium transition ${!tiendaActiva ? 'bg-gray-400 text-gray-200 cursor-not-allowed' : 'btn-primary'}`}
             >
-              Confirmar Pedido
+              {!tiendaActiva ? 'Tienda pausada' : 'Confirmar Pedido'}
             </button>
           </div>
         )}

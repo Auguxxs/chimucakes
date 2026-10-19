@@ -413,6 +413,49 @@ export async function updateOrderStatus(orderId, newStatus) {
 }
 
 /**
+ * Obtiene la configuración de la tienda desde Airtable.
+ * Lee el registro donde clave === 'general' o el primer registro.
+ * @returns {Object} { tienda_activa: boolean, mensaje_cierre: string }
+ */
+export async function getStoreConfig() {
+  if (!isConfigured) {
+    console.log('[Airtable] No configurado, usando tienda activa por defecto')
+    return { tienda_activa: true, mensaje_cierre: '' }
+  }
+
+  try {
+    const url = `${BASE_URL}/configuracion?maxRecords=1`
+    console.log('[Airtable] GET Config URL:', url)
+
+    const res = await fetch(url, { headers })
+    console.log('[Airtable] GET Config status:', res.status)
+
+    if (!res.ok) {
+      const errorBody = await res.json().catch(() => ({}))
+      console.error('[Airtable] GET Config error:', errorBody)
+      return { tienda_activa: true, mensaje_cierre: '' }
+    }
+
+    const data = await res.json()
+    const records = data.records || []
+
+    if (records.length === 0) {
+      console.log('[Airtable] No hay registros en configuracion, usando tienda activa por defecto')
+      return { tienda_activa: true, mensaje_cierre: '' }
+    }
+
+    const fields = records[0].fields || {}
+    const tiendaActiva = fields.tienda_activa !== false
+    const mensajeCierre = fields.mensaje_cierre || ''
+
+    return { tienda_activa: tiendaActiva, mensaje_cierre: mensajeCierre }
+  } catch (error) {
+    console.error('[Airtable] Error en getStoreConfig:', error)
+    return { tienda_activa: true, mensaje_cierre: '' }
+  }
+}
+
+/**
  * Actualiza un pedido completo en Airtable.
  * @param {string} orderId - ID del registro en Airtable
  * @param {Object} updateData - Campos a actualizar

@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useCallback, useMemo } from 'react'
+import { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react'
+import { getStoreConfig } from '../services/airtableService'
 
 const CartContext = createContext()
 
@@ -13,6 +14,27 @@ const getItemKey = (item) => {
 export function CartProvider({ children }) {
   const [items, setItems] = useState([])
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const [tiendaActiva, setTiendaActiva] = useState(true)
+  const [mensajeCierre, setMensajeCierre] = useState('')
+  const [tiendaCargada, setTiendaCargada] = useState(false)
+
+  const loadStoreConfig = useCallback(async () => {
+    try {
+      const config = await getStoreConfig()
+      setTiendaActiva(config.tienda_activa !== false)
+      setMensajeCierre(config.mensaje_cierre || '')
+    } catch (err) {
+      console.error('[CartContext] Error cargando configuración de tienda:', err)
+      setTiendaActiva(true)
+      setMensajeCierre('')
+    } finally {
+      setTiendaCargada(true)
+    }
+  }, [])
+
+  useEffect(() => {
+    loadStoreConfig()
+  }, [loadStoreConfig])
 
   const addToCart = useCallback((product) => {
     const key = getItemKey(product)
@@ -78,8 +100,11 @@ export function CartProvider({ children }) {
       closeCart,
       totalItems,
       totalPrice,
+      tiendaActiva,
+      mensajeCierre,
+      tiendaCargada,
     }),
-    [items, addToCart, removeFromCart, updateQuantity, clearCart, isCartOpen, openCart, closeCart, totalItems, totalPrice]
+    [items, addToCart, removeFromCart, updateQuantity, clearCart, isCartOpen, openCart, closeCart, totalItems, totalPrice, tiendaActiva, mensajeCierre, tiendaCargada]
   )
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>
