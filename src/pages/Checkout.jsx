@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext'
 import { createOrder } from '../services/airtableService'
 
 function Checkout() {
-  const { items, totalPrice, clearCart, tiendaActiva, mensajeCierre } = useCart()
+  const { items, totalPrice, clearCart, tiendaActiva, mensajeCierre, direccionLocal } = useCart()
   const navigate = useNavigate()
   const [form, setForm] = useState({
     customerName: '',
@@ -83,7 +83,7 @@ ${itemsText}
     setSending(true)
 
     const addressValue =
-      form.deliveryMethod === 'retiro' ? 'Retiro en local' : form.address
+      form.deliveryMethod === 'retiro' ? `Retiro por el local${direccionLocal ? ' - ' + direccionLocal : ''}` : form.address
 
     const itemsText = items
       .map((item) => {
@@ -156,6 +156,21 @@ ${itemsText}
                   {mensajeCierre}
                 </p>
               )}
+            </div>
+          )}
+
+          {/* Dirección del local para retiro */}
+          {deliveryMethod === 'retiro' && direccionLocal && (
+            <div className="p-4 rounded-xl border-2 border-verde bg-verde/10 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">📍</span>
+                <span className="text-sm font-semibold text-oscuro">
+                  Retirar por el local
+                </span>
+              </div>
+              <p className="mt-1 text-xs text-marron/70">
+                {direccionLocal}
+              </p>
             </div>
           )}
 
