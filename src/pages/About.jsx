@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getNosotros } from '../services/airtableService'
+import { getNosotrosData } from '../services/airtableService'
 
 function About() {
   const [secciones, setSecciones] = useState([])
@@ -7,7 +7,7 @@ function About() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    getNosotros()
+    getNosotrosData()
       .then((data) => {
         setSecciones(data)
         setLoading(false)
@@ -45,7 +45,7 @@ function About() {
   const seccionFirma = secciones.find((s) => s.tipo === 'firma')
 
   const imagenUrl =
-    seccionEquipo?.imagen_url || 'https://placehold.co/600x400/faf6f2/6d544f?text=ChimuCakes'
+    seccionEquipo?.imagen || 'https://placehold.co/600x400/faf6f2/6d544f?text=ChimuCakes'
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-16">
