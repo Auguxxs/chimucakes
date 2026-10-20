@@ -13,6 +13,17 @@ function Home() {
     window.open(url, '_blank')
   }
 
+  const generarMensajeWhatsApp = (titulo) => {
+    const tituloLower = (titulo || '').toLowerCase()
+    if (tituloLower.includes('torta') || tituloLower.includes('personalizada')) {
+      return 'Hola Chimu Cakes, quisiera pedir una torta personalizada.'
+    }
+    if (tituloLower.includes('mesa dulce') || tituloLower.includes('catering')) {
+      return 'Hola Chimu Cakes, quisiera saber más información sobre las mesas dulces.'
+    }
+    return `Hola Chimu Cakes, quisiera más información sobre ${titulo}.`
+  }
+
   useEffect(() => {
     getInicioDestacadosData()
       .then((data) => {
@@ -126,7 +137,7 @@ function Home() {
                         {item.contenido}
                       </p>
                       <button
-                        onClick={() => openWhatsApp(item.whatsappMessage)}
+                        onClick={() => openWhatsApp(generarMensajeWhatsApp(item.titulo))}
                         className="btn-whatsapp mt-6 w-fit"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
