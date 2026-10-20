@@ -628,6 +628,76 @@ export async function getNosotrosData() {
 }
 
 /**
+ * Obtiene los registros de la tabla "inicio_destacados" de Airtable de forma aislada.
+ * Consulta directa sin usar mapeadores de otras tablas.
+ * @returns {Array} Array de objetos con id, titulo, contenido, imagen, orden
+ */
+export async function getInicioDestacadosData() {
+  if (!isConfigured) {
+    console.log('[Airtable] No configurado, usando datos mock locales')
+    return [
+      {
+        id: 'mock-inicio-1',
+        titulo: 'Mesa Dulce para Eventos',
+        contenido: 'Cumpleaños, casamientos, corporativos y celebraciones especiales. Creamos mesas dulces personalizadas con la variedad y calidad que merece tu evento.',
+        imagen: null,
+        whatsappMessage: '¡Hola ChimuCakes! Quisiera consultar presupuesto e información para contratar una mesa dulce para un evento.',
+        orden: 1,
+      },
+      {
+        id: 'mock-inicio-2',
+        titulo: 'Torta Full Personalizada',
+        contenido: 'Elegí la combinación perfecta: bizcochos de Chocolate, Vainilla, Red Velvet, Carrot Cake, Oreo y más. Rellenos especiales como Ganaches, Dulce de leche, Pistacho, Nutella, Frutos rojos y Crema Oreo.',
+        imagen: null,
+        whatsappMessage: '¡Hola ChimuCakes! Me gustaría cotizar una Torta Full Personalizada. ¿Me podrías brindar más información sobre los tamaños y disponibles?',
+        orden: 2,
+      },
+    ]
+  }
+
+  try {
+    const url = `${BASE_URL}/inicio_destacados`
+    console.log('[Airtable] GET Inicio Destacados URL:', url)
+
+    const res = await fetch(url, { headers })
+    console.log('[Airtable] GET Inicio Destacados status:', res.status)
+
+    if (!res.ok) {
+      const errorText = await res.text()
+      console.error('Airtable Inicio Destacados Error:', res.status, errorText)
+      throw new Error(`HTTP ${res.status}`)
+    }
+
+    const data = await res.json()
+    const records = data.records || []
+
+    // Ordenar por campo 'orden' en JavaScript
+    records.sort((a, b) => (a.fields.orden || 0) - (b.fields.orden || 0))
+
+    return records.map((record) => {
+      const fields = record.fields || {}
+
+      // Extraer URL de imagen de attachment de Airtable
+      const imagenUrl = Array.isArray(fields.imagen) && fields.imagen.length > 0
+        ? (fields.imagen[0].url || fields.imagen[0].thumbnails?.large?.url || null)
+        : null
+
+      return {
+        id: fields.id || record.id,
+        titulo: fields.titulo || '',
+        contenido: fields.contenido || '',
+        imagen: imagenUrl,
+        whatsappMessage: fields.whatsapp_message || '',
+        orden: Number(fields.orden) || 0,
+      }
+    })
+  } catch (error) {
+    console.error('[Airtable] Error en getInicioDestacadosData:', error)
+    return []
+  }
+}
+
+/**
  * Actualiza un pedido completo en Airtable.
  * @param {string} orderId - ID del registro en Airtable
  * @param {Object} updateData - Campos a actualizar

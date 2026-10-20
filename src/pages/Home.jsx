@@ -1,12 +1,30 @@
 import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { getInicioDestacadosData } from '../services/airtableService'
 
 function Home() {
   const whatsappNumber = import.meta.env.VITE_WHATSAPP_PHONE || '5493794689777'
+  const [destacados, setDestacados] = useState([])
+  const [loadingDestacados, setLoadingDestacados] = useState(true)
+  const [errorDestacados, setErrorDestacados] = useState('')
 
   const openWhatsApp = (message) => {
     const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
     window.open(url, '_blank')
   }
+
+  useEffect(() => {
+    getInicioDestacadosData()
+      .then((data) => {
+        setDestacados(data)
+        setLoadingDestacados(false)
+      })
+      .catch((err) => {
+        console.error('[Home] Error cargando destacados:', err)
+        setErrorDestacados('No se pudieron cargar los destacados')
+        setLoadingDestacados(false)
+      })
+  }, [])
 
   return (
     <div>
@@ -82,85 +100,68 @@ function Home() {
         </div>
       </section>
 
-      {/* Mesa Dulce para Eventos */}
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <div className="card overflow-hidden">
-          <div className="grid md:grid-cols-2">
-            <div className="bg-gradient-to-br from-rosaClaro to-rosa/30 p-8 md:p-12 flex flex-col justify-center">
-              <span className="mb-3 inline-block w-fit rounded-full bg-rosa px-3 py-1 text-xs font-semibold text-oscuro">
-                Catering & Eventos
-              </span>
-              <h2 className="font-display text-3xl font-bold text-oscuro md:text-4xl">
-                Mesa Dulce para Eventos
-              </h2>
-              <p className="mt-4 text-marron/80">
-                Cumpleaños, casamientos, corporativos y celebraciones especiales.
-                Creamos mesas dulces personalizadas con la variedad y calidad que
-                merece tu evento.
-              </p>
-              <button
-                onClick={() => openWhatsApp('¡Hola ChimuCakes! Quisiera consultar presupuesto e información para contratar una mesa dulce para un evento.')}
-                className="btn-whatsapp mt-6 w-fit"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                </svg>
-                Consultar Mesa Dulce
-              </button>
-            </div>
-            <div className="bg-oscuro p-8 md:p-12 flex items-center justify-center">
-              <div className="text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-24 w-24 text-rosa/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <p className="mt-4 text-crema/60 font-display text-xl">
-                  Cumpleaños · Casamientos · Corporativos
-                </p>
-              </div>
-            </div>
+      {/* Destacados - Mesa Dulce y Torta Personalizada */}
+      {loadingDestacados ? (
+        <section className="mx-auto max-w-6xl px-4 py-16">
+          <div className="flex justify-center py-20">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-rosa border-t-transparent" />
           </div>
-        </div>
-      </section>
-
-      {/* Torta Full Personalizada */}
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <div className="card overflow-hidden">
-          <div className="grid md:grid-cols-2">
-            <div className="bg-oscuro p-8 md:p-12 flex items-center justify-center order-2 md:order-1">
-              <div className="text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-24 w-24 text-lima/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-                <p className="mt-4 text-crema/60 font-display text-xl">
-                  Chocolate · Vainilla · Red Velvet · Carrot Cake · Oreo
-                </p>
+        </section>
+      ) : destacados.length > 0 ? (
+        <>
+          {destacados.map((item) => (
+            <section key={item.id || item.titulo} className="mx-auto max-w-6xl px-4 py-16">
+              <div className="card overflow-hidden">
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="bg-gradient-to-br from-rosaClaro to-rosa/30 p-8 md:p-12 flex flex-col justify-center">
+                    <span className="mb-3 inline-block w-fit rounded-full bg-rosa px-3 py-1 text-xs font-semibold text-oscuro">
+                      Catering & Eventos
+                    </span>
+                    <h2 className="font-display text-3xl font-bold text-oscuro md:text-4xl">
+                      {item.titulo}
+                    </h2>
+                    <p className="mt-4 text-marron/80 whitespace-pre-line">
+                      {item.contenido}
+                    </p>
+                    <button
+                      onClick={() => openWhatsApp(item.whatsappMessage)}
+                      className="btn-whatsapp mt-6 w-fit"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                      </svg>
+                      Consultar
+                    </button>
+                  </div>
+                  <div className="bg-oscuro p-8 md:p-12 flex items-center justify-center">
+                    <div className="text-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-24 w-24 text-rosa/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <p className="mt-4 text-crema/60 font-display text-xl">
+                        {item.titulo}
+                      </p>
+                    </div>
+                  </div>
+                  {item.imagen && typeof item.imagen === 'string' && item.imagen.startsWith('http') ? (
+                    <div className="bg-gradient-to-br from-lima/30 to-lima/10 p-8 md:p-12 flex items-center justify-center">
+                      <img
+                        src={item.imagen}
+                        alt={item.titulo}
+                        className="w-full h-auto object-cover rounded-2xl shadow-lg"
+                      />
+                    </div>
+                  ) : null}
+                </div>
               </div>
-            </div>
-            <div className="bg-gradient-to-br from-lima/30 to-lima/10 p-8 md:p-12 flex flex-col justify-center order-1 md:order-2">
-              <span className="mb-3 inline-block w-fit rounded-full bg-lima px-3 py-1 text-xs font-semibold text-oscuro">
-                Personalizá tu torta
-              </span>
-              <h2 className="font-display text-3xl font-bold text-oscuro md:text-4xl">
-                Torta Full Personalizada
-              </h2>
-              <p className="mt-4 text-marron/80">
-                Elegí la combinación perfecta: bizcochos de Chocolate, Vainilla,
-                Red Velvet, Carrot Cake, Oreo y más. Rellenos especiales como
-                Ganaches, Dulce de leche, Pistacho, Nutella, Frutos rojos y Crema Oreo.
-              </p>
-              <button
-                onClick={() => openWhatsApp('¡Hola ChimuCakes! Me gustaría cotizar una Torta Full Personalizada. ¿Me podrías brindar más información sobre los tamaños y disponibles?')}
-                className="btn-whatsapp mt-6 w-fit"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                </svg>
-                Pedir Torta Personalizada
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+            </section>
+          ))}
+        </>
+      ) : (
+        <section className="mx-auto max-w-6xl px-4 py-16 text-center">
+          <p className="text-marron/60">No hay destacados disponibles</p>
+        </section>
+      )}
 
       {/* CTA */}
       <section className="bg-marron py-16 text-crema">
