@@ -196,8 +196,14 @@ ${itemsText}
                   </div>
                 </label>
                 {form.deliveryMethod === 'retiro' && (
-                  <div className="p-3 bg-neutral-100 rounded-md text-sm mt-2 text-neutral-700">
-                    📍 <strong>Dirección de retiro:</strong> Perú 1568
+                  <div className="p-3.5 bg-pink-50/60 rounded-xl border border-pink-200/60 text-sm mt-2 text-marron/80 shadow-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">📍</span>
+                      <span className="font-semibold">Punto de retiro:</span> Perú 1568
+                    </div>
+                    <p className="mt-1 text-xs text-marron/60">
+                      Coordinar horario de entrega por WhatsApp
+                    </p>
                   </div>
                 )}
                 <label className="flex flex-1 cursor-pointer items-center gap-3 rounded-xl border-2 border-marron/20 p-3 transition hover:border-rosa has-[:checked]:border-rosa has-[:checked]:bg-rosaClaro/30">
