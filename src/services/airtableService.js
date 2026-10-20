@@ -502,20 +502,23 @@ export async function getNosotros() {
   }
 
   try {
-    const url = `${BASE_URL}/nosotros?sort%5B0%5D%5Bfield%5D=orden&sort%5B0%5D%5Bdirection%5D=asc`
+    const url = `${BASE_URL}/nosotros`
     console.log('[Airtable] GET Nosotros URL:', url)
 
     const res = await fetch(url, { headers })
     console.log('[Airtable] GET Nosotros status:', res.status)
 
     if (!res.ok) {
-      const errorBody = await res.json().catch(() => ({}))
-      console.error('[Airtable] GET Nosotros error:', errorBody)
-      throw new Error(errorBody?.error?.message || `HTTP ${res.status}`)
+      const errorText = await res.text()
+      console.error('Airtable Nosotros Error:', res.status, errorText)
+      throw new Error(`HTTP ${res.status}`)
     }
 
     const data = await res.json()
     const records = data.records || []
+
+    // Ordenar por campo 'orden' en JavaScript
+    records.sort((a, b) => (a.fields.orden || 0) - (b.fields.orden || 0))
 
     return records.map((record) => {
       const fields = record.fields || {}
