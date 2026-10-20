@@ -44,8 +44,8 @@ function About() {
   const seccionFilosofia = secciones.find((s) => s.tipo === 'filosofia')
   const seccionFirma = secciones.find((s) => s.tipo === 'firma')
 
-  const imagenUrl =
-    seccionEquipo?.imagen || 'https://placehold.co/600x400/faf6f2/6d544f?text=ChimuCakes'
+  const imagenUrl = seccionEquipo?.imagen || null
+  const tieneImagen = Boolean(imagenUrl && imagenUrl.startsWith('http'))
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-16">
@@ -67,14 +67,16 @@ function About() {
               {seccionEquipo?.contenido || ''}
             </div>
           </div>
-          <div className="relative rounded-2xl overflow-hidden shadow-lg">
-            <img
-              src={imagenUrl}
-              alt="Equipo ChimuCakes"
-              className="w-full h-auto object-cover rounded-2xl"
-            />
-            <div className="absolute inset-0 rounded-2xl bg-rosa/20" />
-          </div>
+          {tieneImagen && (
+            <div className="relative rounded-2xl overflow-hidden shadow-lg">
+              <img
+                src={imagenUrl}
+                alt="Equipo ChimuCakes"
+                className="w-full h-auto object-cover rounded-2xl"
+              />
+              <div className="absolute inset-0 rounded-2xl bg-rosa/20" />
+            </div>
+          )}
         </div>
       </div>
 
