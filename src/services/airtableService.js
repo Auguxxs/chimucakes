@@ -553,21 +553,21 @@ export async function getNosotrosData() {
         id: 'mock-1',
         titulo: 'Equipo de Chimu',
         contenido: 'Mi pasión por la repostería comenzó desde muy chica. Todavía me acuerdo cuando una amiga de la familia me enseñó las primeras cosas básicas de repostería. O cuando iba en el colegio y hacía postres o tortas para mis amigos en cumpleaños y juntadas.\n\nY así, sin darme cuenta, fueron pasando los años. Hasta que en 2022 decidí dar el paso y comenzar a emprender.',
-        imagen_url: '',
+        imagen: null,
         orden: 1,
       },
       {
         id: 'mock-2',
         titulo: 'Nuestro compromiso',
         contenido: 'Desde el 2020 soy vegana. Pero viendo que no hay opciones aptas para nosotros, decidí juntar mi pasión por la repostería con el veganismo. Es así que cada vez les ofrezco más postres veganos.',
-        imagen_url: '',
+        imagen: null,
         orden: 2,
       },
       {
         id: 'mock-3',
         titulo: 'Nuestra filosofía',
         contenido: 'Una de las cosas que me encanta es exactamente eso: veganizar recetas. Porque lo vegano no es feo si se hace con pasión y compromiso.',
-        imagen_url: '',
+        imagen: null,
         tipo: 'filosofia',
         orden: 3,
       },
@@ -575,7 +575,7 @@ export async function getNosotrosData() {
         id: 'mock-4',
         titulo: 'Firma',
         contenido: 'Con cariño, Lu, Deli y toda la familia Chimu 🩷',
-        imagen_url: '',
+        imagen: null,
         tipo: 'firma',
         orden: 4,
       },
@@ -583,28 +583,40 @@ export async function getNosotrosData() {
   }
 
   try {
-    const url = `${BASE_URL}/nosotros?sort%5B0%5D%5Bfield%5D=orden&sort%5B0%5D%5Bdirection%5D=asc`
+    const url = `${BASE_URL}/nosotros`
     console.log('[Airtable] GET Nosotros URL:', url)
 
     const res = await fetch(url, { headers })
     console.log('[Airtable] GET Nosotros status:', res.status)
 
     if (!res.ok) {
-      const errorBody = await res.json().catch(() => ({}))
-      console.error('[Airtable] GET Nosotros error:', errorBody)
-      throw new Error(errorBody?.error?.message || `HTTP ${res.status}`)
+      const errorText = await res.text()
+      console.error('Airtable Nosotros Error:', res.status, errorText)
+      throw new Error(`HTTP ${res.status}`)
     }
 
     const data = await res.json()
     const records = data.records || []
 
-    const datos = records.map((record) => ({
-      id: record.fields.id || record.id,
-      titulo: record.fields.titulo || '',
-      contenido: record.fields.contenido || '',
-      orden: record.fields.orden || 0,
-      imagen: record.fields.imagen?.[0]?.url || null,
-    }))
+    // Ordenar por campo 'orden' en JavaScript
+    records.sort((a, b) => (a.fields.orden || 0) - (b.fields.orden || 0))
+
+    const datos = records.map((record) => {
+      const fields = record.fields || {}
+
+      // Extraer URL de imagen de attachment de Airtable
+      const imagenUrl = Array.isArray(fields.imagen) && fields.imagen.length > 0
+        ? (fields.imagen[0].url || fields.imagen[0].thumbnails?.large?.url || null)
+        : null
+
+      return {
+        id: fields.id || record.id,
+        titulo: fields.titulo || '',
+        contenido: fields.contenido || '',
+        orden: Number(fields.orden) || 0,
+        imagen: imagenUrl,
+      }
+    })
 
     console.log('Datos de Nosotros cargados:', datos)
 
