@@ -135,27 +135,19 @@ function Home() {
                         Consultar
                       </button>
                     </div>
-                    <div className="bg-oscuro p-8 md:p-12 flex items-center justify-center">
-                      <div className="text-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-24 w-24 text-rosa/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <p className="mt-4 text-crema/60 font-display text-xl">
-                          {item.titulo}
-                        </p>
-                      </div>
-                    </div>
-                    {item.imagen ? (
-                      <div className="bg-gradient-to-br from-lima/30 to-lima/10 p-8 md:p-12 flex items-center justify-center">
+                    <div className="relative rounded-2xl overflow-hidden shadow-lg min-h-[250px]">
+                      {item.imagen ? (
                         <img
                           src={item.imagen}
                           alt={item.titulo || 'Destacado'}
-                          className="w-full h-auto max-h-80 object-cover rounded-xl my-4 block"
+                          className="w-full h-full object-cover rounded-2xl"
                         />
-                      </div>
-                    ) : (
-                      console.log("No hay URL de imagen para:", item.titulo)
-                    )}
+                      ) : (
+                        <div className="w-full h-full bg-pink-100 flex items-center justify-center min-h-[250px] rounded-2xl">
+                          <span className="text-pink-400 font-medium">Sin imagen</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </section>
