@@ -64,7 +64,7 @@ function About() {
               {seccionEquipo?.titulo || 'Equipo de Chimu'}
             </h2>
             <div className="whitespace-pre-line text-marron/80 leading-relaxed text-lg">
-              {seccionEquipo?.texto || ''}
+              {seccionEquipo?.contenido || ''}
             </div>
           </div>
           <div className="relative rounded-2xl overflow-hidden shadow-lg">
@@ -85,7 +85,7 @@ function About() {
             {seccionCompromiso?.titulo || 'Nuestro compromiso'}
           </h2>
           <div className="whitespace-pre-line text-marron/80 leading-relaxed">
-            {seccionCompromiso?.texto || ''}
+            {seccionCompromiso?.contenido || ''}
           </div>
         </div>
         <div className="card p-8 rounded-2xl">
@@ -93,7 +93,7 @@ function About() {
             {seccionFilosofia?.titulo || 'Nuestra filosofía'}
           </h2>
           <div className="whitespace-pre-line text-marron/80 leading-relaxed">
-            {seccionFilosofia?.texto || ''}
+            {seccionFilosofia?.contenido || ''}
           </div>
         </div>
       </div>
@@ -101,7 +101,7 @@ function About() {
       {/* Firma final */}
       <div className="mt-12 rounded-2xl bg-gradient-to-r from-rosaClaro to-lima/20 p-8 text-center border border-rosa/40">
         <p className="font-display text-xl font-bold text-marron">
-          "{seccionFirma?.texto || 'Con cariño, Lu, Deli y toda la familia Chimu 🩷'}"
+          "{seccionFirma?.contenido || 'Con cariño, Lu, Deli y toda la familia Chimu 🩷'}"
         </p>
       </div>
     </div>

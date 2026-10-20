@@ -459,8 +459,8 @@ export async function getStoreConfig() {
 }
 
 /**
- * Obtiene los registros de la tabla "Nosotros" de Airtable, ordenados por el campo 'orden'.
- * @returns {Array} Array de objetos con id, titulo, texto, imagen_url, tipo, orden
+ * Obtiene los registros de la tabla "nosotros" de Airtable, ordenados por el campo 'orden'.
+ * @returns {Array} Array de objetos con id, titulo, contenido, imagen_url, tipo, orden
  */
 export async function getNosotros() {
   if (!isConfigured) {
@@ -469,7 +469,7 @@ export async function getNosotros() {
       {
         id: 'mock-1',
         titulo: 'Equipo de Chimu',
-        texto: 'Mi pasión por la repostería comenzó desde muy chica. Todavía me acuerdo cuando una amiga de la familia me enseñó las primeras cosas básicas de repostería. O cuando iba en el colegio y hacía postres o tortas para mis amigos en cumpleaños y juntadas.\n\nY así, sin darme cuenta, fueron pasando los años. Hasta que en 2022 decidí dar el paso y comenzar a emprender.',
+        contenido: 'Mi pasión por la repostería comenzó desde muy chica. Todavía me acuerdo cuando una amiga de la familia me enseñó las primeras cosas básicas de repostería. O cuando iba en el colegio y hacía postres o tortas para mis amigos en cumpleaños y juntadas.\n\nY así, sin darme cuenta, fueron pasando los años. Hasta que en 2022 decidí dar el paso y comenzar a emprender.',
         imagen_url: '',
         tipo: 'equipo',
         orden: 1,
@@ -477,7 +477,7 @@ export async function getNosotros() {
       {
         id: 'mock-2',
         titulo: 'Nuestro compromiso',
-        texto: 'Desde el 2020 soy vegana. Pero viendo que no hay opciones aptas para nosotros, decidí juntar mi pasión por la repostería con el veganismo. Es así que cada vez les ofrezco más postres veganos.',
+        contenido: 'Desde el 2020 soy vegana. Pero viendo que no hay opciones aptas para nosotros, decidí juntar mi pasión por la repostería con el veganismo. Es así que cada vez les ofrezco más postres veganos.',
         imagen_url: '',
         tipo: 'compromiso',
         orden: 2,
@@ -485,7 +485,7 @@ export async function getNosotros() {
       {
         id: 'mock-3',
         titulo: 'Nuestra filosofía',
-        texto: 'Una de las cosas que me encanta es exactamente eso: veganizar recetas. Porque lo vegano no es feo si se hace con pasión y compromiso.',
+        contenido: 'Una de las cosas que me encanta es exactamente eso: veganizar recetas. Porque lo vegano no es feo si se hace con pasión y compromiso.',
         imagen_url: '',
         tipo: 'filosofia',
         orden: 3,
@@ -493,7 +493,7 @@ export async function getNosotros() {
       {
         id: 'mock-4',
         titulo: 'Firma',
-        texto: 'Con cariño, Lu, Deli y toda la familia Chimu 🩷',
+        contenido: 'Con cariño, Lu, Deli y toda la familia Chimu 🩷',
         imagen_url: '',
         tipo: 'firma',
         orden: 4,
@@ -502,7 +502,7 @@ export async function getNosotros() {
   }
 
   try {
-    const url = `${BASE_URL}/Nosotros?sort%5B0%5D%5Bfield%5D=orden&sort%5B0%5D%5Bdirection%5D=asc`
+    const url = `${BASE_URL}/nosotros?sort%5B0%5D%5Bfield%5D=orden&sort%5B0%5D%5Bdirection%5D=asc`
     console.log('[Airtable] GET Nosotros URL:', url)
 
     const res = await fetch(url, { headers })
@@ -522,9 +522,9 @@ export async function getNosotros() {
       const imagenUrl = fields.imagen?.[0]?.url || fields.imagen?.[0]?.thumbnails?.large?.url || ''
 
       return {
-        id: record.id,
+        id: fields.id || record.id,
         titulo: fields.titulo || '',
-        texto: fields.texto || '',
+        contenido: fields.contenido || '',
         imagen_url: imagenUrl,
         image: imagenUrl,
         tipo: fields.tipo || '',
