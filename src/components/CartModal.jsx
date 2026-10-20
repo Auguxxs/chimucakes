@@ -2,9 +2,10 @@ import { useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 
 function CartModal() {
-  const { items, isCartOpen, closeCart, updateQuantity, removeFromCart, totalPrice, tiendaActiva, mensajeCierre, direccionLocal } = useCart()
+  const { items, isCartOpen, closeCart, updateQuantity, removeFromCart, totalPrice, tiendaActiva, mensajeCierre } = useCart()
   const navigate = useNavigate()
-  const [deliveryMethod, setDeliveryMethod] = useState('retiro')
+
+  if (!isCartOpen) return null
 
   const handleCheckout = () => {
     closeCart()
@@ -48,21 +49,6 @@ function CartModal() {
                 {mensajeCierre}
               </p>
             )}
-          </div>
-        )}
-
-        {/* Dirección del local para retiro */}
-        {deliveryMethod === 'retiro' && direccionLocal && (
-          <div className="p-4 rounded-xl border-2 border-verde bg-verde/10 mb-4">
-            <div className="flex items-center gap-2">
-              <span className="text-xl">📍</span>
-              <span className="text-sm font-semibold text-oscuro">
-                Retirar por el local
-              </span>
-            </div>
-            <p className="mt-1 text-xs text-marron/70">
-              {direccionLocal}
-            </p>
           </div>
         )}
 
@@ -151,28 +137,6 @@ function CartModal() {
               <span className="text-marron">Total</span>
               <span className="text-verde">${totalPrice.toLocaleString('es-AR')}</span>
             </div>
-
-            {/* Selector de método de entrega */}
-            <div className="mt-3 space-y-2">
-              <label className="block text-xs font-medium text-marron/70 mb-1">
-                Método de entrega:
-              </label>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setDeliveryMethod('retiro')}
-                  className={`flex-1 rounded-xl border px-3 py-2 text-sm font-medium transition ${deliveryMethod === 'retiro' ? 'bg-rosa text-oscuro shadow-sm' : 'bg-rosaClaro/50 text-marron hover:bg-rosaClaro border border-marron/20'}`}
-                >
-                  Retiro en local
-                </button>
-                <button
-                  onClick={() => setDeliveryMethod('envio')}
-                  className={`flex-1 rounded-xl border px-3 py-2 text-sm font-medium transition ${deliveryMethod === 'envio' ? 'bg-rosa text-oscuro shadow-sm' : 'bg-rosaClaro/50 text-marron hover:bg-rosaClaro border border-marron/20'}`}
-                >
-                  Envío a domicilio
-                </button>
-              </div>
-            </div>
-
             <button
               onClick={handleCheckout}
               disabled={!tiendaActiva}

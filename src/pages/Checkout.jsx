@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext'
 import { createOrder } from '../services/airtableService'
 
 function Checkout() {
-  const { items, totalPrice, clearCart, tiendaActiva, mensajeCierre, direccionLocal } = useCart()
+  const { items, totalPrice, clearCart, tiendaActiva, mensajeCierre } = useCart()
   const navigate = useNavigate()
   const [form, setForm] = useState({
     customerName: '',
@@ -33,7 +33,7 @@ function Checkout() {
 
     const deliveryInfo =
       form.deliveryMethod === 'retiro'
-        ? '*Método de entrega:* Retiro en local'
+        ? '*Método de entrega:* Retiro en local (Perú 1568)'
         : `*Método de entrega:* Envío a domicilio\n*Dirección:* ${form.address}\n*Nota:* El envío debe ser cotizado antes de confirmar el pedido`
 
     // Formatear fecha a DD/MM/YYYY solo para el mensaje de WhatsApp
@@ -83,7 +83,7 @@ ${itemsText}
     setSending(true)
 
     const addressValue =
-      form.deliveryMethod === 'retiro' ? `Retiro por el local${direccionLocal ? ' - ' + direccionLocal : ''}` : form.address
+      form.deliveryMethod === 'retiro' ? 'Retiro en local' : form.address
 
     const itemsText = items
       .map((item) => {
@@ -159,21 +159,6 @@ ${itemsText}
             </div>
           )}
 
-          {/* Dirección del local para retiro */}
-          {deliveryMethod === 'retiro' && direccionLocal && (
-            <div className="p-4 rounded-xl border-2 border-verde bg-verde/10 mb-4">
-              <div className="flex items-center gap-2">
-                <span className="text-xl">📍</span>
-                <span className="text-sm font-semibold text-oscuro">
-                  Retirar por el local
-                </span>
-              </div>
-              <p className="mt-1 text-xs text-marron/70">
-                {direccionLocal}
-              </p>
-            </div>
-          )}
-
           <div className="mt-4 space-y-4">
             <div>
               <label className="mb-1 block text-sm font-medium text-marron">
@@ -210,6 +195,11 @@ ${itemsText}
                     <p className="text-xs text-marron/60">Pasá a buscar tu pedido</p>
                   </div>
                 </label>
+                {form.deliveryMethod === 'retiro' && (
+                  <div className="p-3 bg-neutral-100 rounded-md text-sm mt-2 text-neutral-700">
+                    📍 <strong>Dirección de retiro:</strong> Perú 1568
+                  </div>
+                )}
                 <label className="flex flex-1 cursor-pointer items-center gap-3 rounded-xl border-2 border-marron/20 p-3 transition hover:border-rosa has-[:checked]:border-rosa has-[:checked]:bg-rosaClaro/30">
                   <input
                     type="radio"
