@@ -22,12 +22,19 @@ function Catalog() {
       })
   }, [])
 
+  const normalizeCategory = (str) =>
+    String(str || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim()
+
   const filtered =
     activeCategory === 'Todos'
       ? products
       : products.filter((p) => {
-          const prodCat = (p.categoria || p.category || '').toLowerCase().trim()
-          const activeCat = activeCategory.toLowerCase().trim()
+          const prodCat = normalizeCategory(p.categoria || p.category)
+          const activeCat = normalizeCategory(activeCategory)
           return prodCat === activeCat
         })
 

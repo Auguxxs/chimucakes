@@ -143,6 +143,6 @@ const products = [
   },
 ]
 
-export const categories = ['Todos', 'Tortas', 'Cheesecakes', 'Budines', 'Chipas', 'Galletitas', 'Panes', 'Vasitos', 'Alfajores']
+export const categories = ['Todos', 'Tortas', 'Cheesecakes', 'Budines', 'Chipas', 'Galletitas', 'Panes', 'Vasitos', 'Alfajores', 'Sándwiches']
 
 export default products
