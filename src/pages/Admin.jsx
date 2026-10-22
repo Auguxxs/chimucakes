@@ -221,7 +221,7 @@ function OrderModal({ order, onClose, onSave, loading }) {
 
 function OrderCard({ order, onStatusChange, onEdit, onDelete, loadingId }) {
   const nearDelivery = isDeliveryNear(order.deliveryDate)
-  const whatsappNumber = import.meta.env.VITE_WHATSAPP_PHONE || '5493794689777'
+  const whatsappNumber = '5493794044738'
   const isLoading = loadingId === order.id
 
   const handleWhatsApp = () => {

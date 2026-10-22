@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { getInicioDestacadosData } from '../services/airtableService'
 
 function Home() {
-  const whatsappNumber = import.meta.env.VITE_WHATSAPP_PHONE || '5493794689777'
+  const whatsappNumber = '5493794044738'
   const [destacados, setDestacados] = useState([])
   const [loadingDestacados, setLoadingDestacados] = useState(true)
   const [errorDestacados, setErrorDestacados] = useState('')
