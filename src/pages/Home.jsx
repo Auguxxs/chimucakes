@@ -41,7 +41,7 @@ function Home() {
     <div>
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-crema via-rosaClaro/30 to-crema">
-        <div className="mx-auto max-w-6xl px-4 py-20 md:py-32">
+        <div className="relative mx-auto max-w-6xl px-4 py-20 md:py-32">
           <div className="max-w-2xl">
             <span className="mb-4 inline-block rounded-full bg-lima/20 px-4 py-1 text-sm font-semibold text-verde">
               100% Vegano · Artesanal · ChimuCakes
@@ -54,22 +54,24 @@ function Home() {
               Pastelería vegana artesanal elaborada con ingredientes naturales,
               amor y dedicación.
             </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <Link to="/catalogo" className="btn-primary text-lg">
+            <div className="mt-8 flex flex-wrap gap-4 relative z-10">
+              <Link to="/catalogo" className="btn-primary text-lg cursor-pointer touch-manipulation">
                 Ver Catálogo
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </Link>
-              <Link to="/nosotros" className="btn-secondary">
+              <Link to="/nosotros" className="btn-secondary cursor-pointer touch-manipulation">
                 Nuestra Historia
               </Link>
             </div>
           </div>
         </div>
         {/* Decorative elements */}
-        <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-rosa/20 blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-lima/20 blur-3xl" />
+        <div className="relative z-0">
+          <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-rosa/20 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-lima/20 blur-3xl pointer-events-none" />
+        </div>
       </section>
 
       {/* Features */}
