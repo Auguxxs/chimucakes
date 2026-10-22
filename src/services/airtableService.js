@@ -448,10 +448,11 @@ export async function getStoreConfig() {
     // Checkbox desmarcado en Airtable devuelve undefined/null, no false
     const tiendaActiva = Boolean(fields.tienda_activa === true)
     const mensajeCierre = fields.mensaje_cierre || ''
+    const telefono = fields.telefono || fields.Telefono || ''
 
-    console.log('[CONFIG TIENDA]:', { tiendaActiva, mensajeCierre, origen: 'airtable' })
+    console.log('[CONFIG TIENDA]:', { tiendaActiva, mensajeCierre, telefono, origen: 'airtable' })
 
-    return { tienda_activa: tiendaActiva, mensaje_cierre: mensajeCierre }
+    return { tienda_activa: tiendaActiva, mensaje_cierre: mensajeCierre, telefono }
   } catch (error) {
     console.error('[Airtable] Error en getStoreConfig:', error)
     return { tienda_activa: true, mensaje_cierre: '' }

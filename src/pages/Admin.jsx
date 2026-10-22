@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useCart } from '../context/CartContext'
 import { getOrders, updateOrderStatus, updateOrder, createOrder, deleteOrder } from '../services/airtableService'
 import OrderStats from '../components/OrderStats'
 
@@ -221,12 +222,13 @@ function OrderModal({ order, onClose, onSave, loading }) {
 
 function OrderCard({ order, onStatusChange, onEdit, onDelete, loadingId }) {
   const nearDelivery = isDeliveryNear(order.deliveryDate)
-  const whatsappNumber = import.meta.env.VITE_WHATSAPP_PHONE || '5493794689777'
+  const { whatsappNumber } = useCart()
+  const whatsappNumberVal = whatsappNumber || import.meta.env.VITE_WHATSAPP_PHONE || '5493794689777'
   const isLoading = loadingId === order.id
 
   const handleWhatsApp = () => {
     const message = `Hola ${order.customerName}, soy de ChimuCakes. Consulto sobre tu pedido (${order.itemsText}) con entrega ${order.deliveryDate}.`
-    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
+    const url = `https://wa.me/${whatsappNumberVal}?text=${encodeURIComponent(message)}`
     window.open(url, '_blank')
   }
 

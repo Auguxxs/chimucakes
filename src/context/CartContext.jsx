@@ -16,6 +16,7 @@ export function CartProvider({ children }) {
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [tiendaActiva, setTiendaActiva] = useState(true)
   const [mensajeCierre, setMensajeCierre] = useState('')
+  const [whatsappNumber, setWhatsappNumber] = useState('')
   const [tiendaCargada, setTiendaCargada] = useState(false)
 
   const loadStoreConfig = useCallback(async () => {
@@ -23,7 +24,8 @@ export function CartProvider({ children }) {
       const config = await getStoreConfig()
       setTiendaActiva(Boolean(config.tienda_activa === true))
       setMensajeCierre(config.mensaje_cierre || '')
-      console.log('[CONFIG TIENDA CLIENTE]:', { tiendaActiva: config.tienda_activa, mensajeCierre: config.mensaje_cierre })
+      setWhatsappNumber(config.telefono || '')
+      console.log('[CONFIG TIENDA CLIENTE]:', { tiendaActiva: config.tienda_activa, mensajeCierre: config.mensaje_cierre, whatsappNumber: config.telefono })
     } catch (err) {
       console.error('[CartContext] Error cargando configuración de tienda:', err)
       setTiendaActiva(true)
@@ -103,6 +105,7 @@ export function CartProvider({ children }) {
       totalPrice,
       tiendaActiva,
       mensajeCierre,
+      whatsappNumber,
       tiendaCargada,
     }),
     [items, addToCart, removeFromCart, updateQuantity, clearCart, isCartOpen, openCart, closeCart, totalItems, totalPrice, tiendaActiva, mensajeCierre, tiendaCargada]
