@@ -1,10 +1,9 @@
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { useCart } from '../context/CartContext'
 import { getInicioDestacadosData } from '../services/airtableService'
 
 function Home() {
-  const { whatsappNumber } = useCart()
+  const whatsappNumber = import.meta.env.VITE_WHATSAPP_PHONE || '5493794689777'
   const [destacados, setDestacados] = useState([])
   const [loadingDestacados, setLoadingDestacados] = useState(true)
   const [errorDestacados, setErrorDestacados] = useState('')

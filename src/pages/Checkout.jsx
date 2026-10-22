@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext'
 import { createOrder } from '../services/airtableService'
 
 function Checkout() {
-  const { items, totalPrice, clearCart, tiendaActiva, mensajeCierre, whatsappNumber } = useCart()
+  const { items, totalPrice, clearCart, tiendaActiva, mensajeCierre } = useCart()
   const navigate = useNavigate()
   const [form, setForm] = useState({
     customerName: '',
@@ -105,8 +105,8 @@ ${itemsText}
       })
 
       const message = generateWhatsAppMessage()
-      const whatsappNumberVal = whatsappNumber || import.meta.env.VITE_WHATSAPP_PHONE || '5493794689777'
-      const url = `https://wa.me/${whatsappNumberVal}?text=${encodeURIComponent(message)}`
+      const whatsappNumber = import.meta.env.VITE_WHATSAPP_PHONE || '5493794689777'
+      const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
       window.open(url, '_blank')
 
       clearCart()
