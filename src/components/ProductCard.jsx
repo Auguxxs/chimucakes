@@ -106,11 +106,11 @@ function ProductCard({ product }) {
 
   return (
     <div className="card group overflow-hidden">
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-64 overflow-hidden aspect-[4/3]">
         <img
           src={product.image}
           alt={product.name}
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
         <span className="absolute right-3 top-3 rounded-full bg-lima px-3 py-1 text-xs font-semibold text-oscuro">
           {product.category}
